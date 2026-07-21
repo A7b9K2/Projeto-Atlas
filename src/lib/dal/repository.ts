@@ -11,6 +11,7 @@ import type {
   AuditLog,
   Avaliacao,
   Consent,
+  Id,
   Matricula,
   Pagamento,
   Papel,
@@ -28,6 +29,27 @@ export interface ConviteUsuario {
   nome: string;
   email: string;
   papel: Papel;
+}
+
+export interface AlunoInput {
+  nome: string;
+  data_nascimento: string;
+  responsavel_id: Id | null;
+  foto_url?: string | null;
+  observacoes?: string | null;
+}
+
+export interface ResponsavelInput {
+  nome: string;
+  email: string;
+  telefone?: string | null;
+}
+
+export interface ConsentimentoInput {
+  aluno_id: Id;
+  responsavel_id: Id | null;
+  tipo: import("@/lib/types").TipoConsentimento;
+  concedido: boolean;
 }
 
 export interface AtlasRepository {
@@ -90,4 +112,46 @@ export interface AtlasRepository {
     permissao: string,
     concedida: boolean,
   ): Promise<void>;
+
+  // ---- Alunos ----
+  obterAluno(tenant_id: TenantId, aluno_id: Id): Promise<Aluno | null>;
+  criarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: AlunoInput,
+  ): Promise<Aluno>;
+  atualizarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aluno_id: Id,
+    patch: Partial<AlunoInput>,
+  ): Promise<void>;
+  /** Soft delete: alterna aluno.ativo. */
+  arquivarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aluno_id: Id,
+    arquivado: boolean,
+  ): Promise<void>;
+
+  // ---- Responsáveis ----
+  criarResponsavel(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: ResponsavelInput,
+  ): Promise<Responsavel>;
+  atualizarResponsavel(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    responsavel_id: Id,
+    patch: Partial<ResponsavelInput>,
+  ): Promise<void>;
+
+  // ---- Consentimentos (LGPD) — append-only (histórico) ----
+  registrarConsentimento(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: ConsentimentoInput,
+  ): Promise<Consent>;
+  listarConsentsDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Consent[]>;
 }

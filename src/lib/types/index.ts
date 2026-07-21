@@ -53,6 +53,10 @@ export interface Aluno {
   /** Derivado de data_nascimento; menores exigem consentimento parental. */
   menor_de_idade: boolean;
   responsavel_id: Id | null;
+  /** URL/data-URI da foto (upload mock no MVP). */
+  foto_url: string | null;
+  /** Observações pedagógicas/administrativas livres. */
+  observacoes: string | null;
   ativo: boolean;
   criado_em: IsoDate;
 }

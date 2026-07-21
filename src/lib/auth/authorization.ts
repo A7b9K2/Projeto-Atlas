@@ -17,6 +17,7 @@ export const ROTA_PERMISSAO: ReadonlyArray<readonly [string, Permissao]> = [
   ["/dashboard/usuarios", "usuarios:gerir"],
   ["/dashboard/permissoes", "academia:gerir"],
   ["/dashboard/alunos", "alunos:ler"],
+  ["/dashboard/responsaveis", "alunos:gerir"],
   ["/dashboard/turmas", "agenda:ler"],
   ["/dashboard/agenda", "agenda:ler"],
   ["/dashboard/financeiro", "financeiro:ler"],

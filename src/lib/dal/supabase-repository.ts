@@ -134,4 +134,31 @@ export class SupabaseRepository implements AtlasRepository {
   definirPapelPermissao(): Promise<void> {
     throw new Error(NAO_IMPLEMENTADO);
   }
+
+  // Alunos / responsáveis / consentimentos: mutações passam pelo RLS
+  // (tenant + papel) no banco real. Preparado, ativado por env.
+  obterAluno(): Promise<Aluno | null> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarAluno(): Promise<Aluno> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  atualizarAluno(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  arquivarAluno(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarResponsavel(): Promise<Responsavel> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  atualizarResponsavel(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  registrarConsentimento(): Promise<Consent> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarConsentsDoAluno(): Promise<Consent[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
 }

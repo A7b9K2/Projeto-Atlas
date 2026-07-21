@@ -3,7 +3,13 @@
  * Simula o isolamento multi-tenant filtrando por tenant_id em toda leitura
  * (no Supabase real esse isolamento é imposto pelo RLS, não pelo app).
  */
-import type { AtlasRepository, ConviteUsuario } from "./repository";
+import type {
+  AtlasRepository,
+  AlunoInput,
+  ConsentimentoInput,
+  ConviteUsuario,
+  ResponsavelInput,
+} from "./repository";
 import { criarSeed, type SeedData } from "@/mocks/seed";
 import type {
   Academia,
@@ -12,6 +18,7 @@ import type {
   AuditLog,
   Avaliacao,
   Consent,
+  Id,
   Matricula,
   Pagamento,
   Papel,
@@ -24,6 +31,26 @@ import type {
   Usuario,
 } from "@/lib/types";
 import { logger } from "@/lib/logger";
+
+function ehMenor(data_nascimento: string): boolean {
+  const nasc = new Date(data_nascimento);
+  const limite = new Date();
+  limite.setFullYear(limite.getFullYear() - 18);
+  return nasc > limite;
+}
+
+/**
+ * Relógio monotônico: garante timestamps estritamente crescentes mesmo em
+ * escritas no mesmo milissegundo, tornando a ordenação por criado_em estável.
+ */
+let ultimoTs = 0;
+function agoraMs(): number {
+  ultimoTs = Math.max(Date.now(), ultimoTs + 1);
+  return ultimoTs;
+}
+function agoraIso(): string {
+  return new Date(agoraMs()).toISOString();
+}
 
 export class MockRepository implements AtlasRepository {
   readonly provider = "mock";
@@ -147,13 +174,13 @@ export class MockRepository implements AtlasRepository {
     entidade_id: string | null,
   ): void {
     this.db.auditLogs.push({
-      id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      id: `log-${agoraMs()}-${Math.random().toString(36).slice(2, 7)}`,
       tenant_id,
       ator_id,
       acao,
       entidade,
       entidade_id,
-      criado_em: new Date().toISOString(),
+      criado_em: agoraIso(),
     });
   }
 
@@ -285,5 +312,155 @@ export class MockRepository implements AtlasRepository {
       "papel_permissoes",
       `${papel}:${permissao}`,
     );
+  }
+
+  // ---------- Alunos ----------
+  async obterAluno(tenant_id: TenantId, aluno_id: Id): Promise<Aluno | null> {
+    return (
+      this.db.alunos.find(
+        (a) => a.id === aluno_id && a.tenant_id === tenant_id,
+      ) ?? null
+    );
+  }
+
+  async criarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: AlunoInput,
+  ): Promise<Aluno> {
+    const aluno: Aluno = {
+      id: `a-${Date.now()}`,
+      tenant_id,
+      nome: input.nome.trim(),
+      data_nascimento: input.data_nascimento,
+      menor_de_idade: ehMenor(input.data_nascimento),
+      responsavel_id: input.responsavel_id,
+      foto_url: input.foto_url ?? null,
+      observacoes: input.observacoes ?? null,
+      ativo: true,
+      criado_em: new Date().toISOString(),
+    };
+    this.db.alunos.push(aluno);
+    this.auditar(tenant_id, ator_id, "aluno.criado", "aluno", aluno.id);
+    logger.info("alunos.criar (mock)", { tenant_id, menor: aluno.menor_de_idade });
+    return aluno;
+  }
+
+  async atualizarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aluno_id: Id,
+    patch: Partial<AlunoInput>,
+  ): Promise<void> {
+    const a = this.db.alunos.find(
+      (x) => x.id === aluno_id && x.tenant_id === tenant_id,
+    );
+    if (!a) throw new Error("Aluno não encontrado no tenant.");
+    if (patch.nome !== undefined) a.nome = patch.nome.trim();
+    if (patch.data_nascimento !== undefined) {
+      a.data_nascimento = patch.data_nascimento;
+      a.menor_de_idade = ehMenor(patch.data_nascimento);
+    }
+    if (patch.responsavel_id !== undefined) a.responsavel_id = patch.responsavel_id;
+    if (patch.foto_url !== undefined) a.foto_url = patch.foto_url;
+    if (patch.observacoes !== undefined) a.observacoes = patch.observacoes;
+    this.auditar(tenant_id, ator_id, "aluno.atualizado", "aluno", aluno_id);
+  }
+
+  async arquivarAluno(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aluno_id: Id,
+    arquivado: boolean,
+  ): Promise<void> {
+    const a = this.db.alunos.find(
+      (x) => x.id === aluno_id && x.tenant_id === tenant_id,
+    );
+    if (!a) throw new Error("Aluno não encontrado no tenant.");
+    a.ativo = !arquivado;
+    this.auditar(
+      tenant_id,
+      ator_id,
+      arquivado ? "aluno.arquivado" : "aluno.reativado",
+      "aluno",
+      aluno_id,
+    );
+  }
+
+  // ---------- Responsáveis ----------
+  async criarResponsavel(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: ResponsavelInput,
+  ): Promise<Responsavel> {
+    const resp: Responsavel = {
+      id: `r-${Date.now()}`,
+      tenant_id,
+      nome: input.nome.trim(),
+      email: input.email.trim(),
+      telefone: input.telefone ?? null,
+      criado_em: new Date().toISOString(),
+    };
+    this.db.responsaveis.push(resp);
+    this.auditar(tenant_id, ator_id, "responsavel.criado", "responsavel", resp.id);
+    return resp;
+  }
+
+  async atualizarResponsavel(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    responsavel_id: Id,
+    patch: Partial<ResponsavelInput>,
+  ): Promise<void> {
+    const r = this.db.responsaveis.find(
+      (x) => x.id === responsavel_id && x.tenant_id === tenant_id,
+    );
+    if (!r) throw new Error("Responsável não encontrado no tenant.");
+    if (patch.nome !== undefined) r.nome = patch.nome.trim();
+    if (patch.email !== undefined) r.email = patch.email.trim();
+    if (patch.telefone !== undefined) r.telefone = patch.telefone;
+    this.auditar(
+      tenant_id,
+      ator_id,
+      "responsavel.atualizado",
+      "responsavel",
+      responsavel_id,
+    );
+  }
+
+  // ---------- Consentimentos (append-only) ----------
+  async registrarConsentimento(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: ConsentimentoInput,
+  ): Promise<Consent> {
+    const consent: Consent = {
+      id: `c-${agoraMs()}`,
+      tenant_id,
+      aluno_id: input.aluno_id,
+      responsavel_id: input.responsavel_id,
+      tipo: input.tipo,
+      concedido: input.concedido,
+      concedido_em: input.concedido ? agoraIso() : null,
+      criado_em: agoraIso(),
+    };
+    this.db.consents.push(consent);
+    this.auditar(
+      tenant_id,
+      ator_id,
+      input.concedido ? "consentimento.concedido" : "consentimento.revogado",
+      "consent",
+      input.aluno_id,
+    );
+    return consent;
+  }
+
+  async listarConsentsDoAluno(
+    tenant_id: TenantId,
+    aluno_id: Id,
+  ): Promise<Consent[]> {
+    return this.porTenant(this.db.consents, tenant_id)
+      .filter((c) => c.aluno_id === aluno_id)
+      .sort((a, b) => (a.criado_em < b.criado_em ? 1 : -1));
   }
 }
