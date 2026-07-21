@@ -1,7 +1,8 @@
 /**
  * AuthProvider mock — sessão por cookie httpOnly + resolução via DAL mock.
- * Usado no preview (sem chaves). O cookie guarda só o e-mail; tenant_id e
- * papel são resolvidos no servidor a cada request (simula os claims do JWT).
+ * Usado no preview (sem chaves). O cookie `atlas_session` guarda o e-mail e
+ * `atlas_papel` guarda o papel (simula os claims do JWT) — assim academias
+ * criadas no onboarding também passam pelo middleware, sem depender do seed.
  */
 import { cookies } from "next/headers";
 import { getRepository } from "@/lib/dal";
@@ -9,6 +10,7 @@ import type { SessaoAtual } from "@/lib/types";
 import type { AuthProvider, Credenciais } from "./provider";
 
 const COOKIE = "atlas_session";
+const COOKIE_PAPEL = "atlas_papel";
 
 export class MockAuthProvider implements AuthProvider {
   readonly nome = "mock";
@@ -22,16 +24,19 @@ export class MockAuthProvider implements AuthProvider {
   async login(credenciais: Credenciais): Promise<SessaoAtual | null> {
     const sessao = await getRepository().autenticar(credenciais.email);
     if (!sessao) return null;
-    cookies().set(COOKIE, credenciais.email, {
+    const opcoes = {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "lax" as const,
       path: "/",
       maxAge: 60 * 60 * 8,
-    });
+    };
+    cookies().set(COOKIE, credenciais.email, opcoes);
+    cookies().set(COOKIE_PAPEL, sessao.usuario.papel, opcoes);
     return sessao;
   }
 
   async logout(): Promise<void> {
     cookies().delete(COOKIE);
+    cookies().delete(COOKIE_PAPEL);
   }
 }

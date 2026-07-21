@@ -10,10 +10,18 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { permissaoDaRota } from "@/lib/auth/authorization";
+import { PAPEIS, type Papel } from "@/lib/types";
 import { temPermissao } from "@/lib/types/permissions";
 import { papelPorEmailSeed } from "@/mocks/seed";
 
 const COOKIE = "atlas_session";
+const COOKIE_PAPEL = "atlas_papel";
+
+function papelDoCookie(valor: string | undefined): Papel | null {
+  return valor && (PAPEIS as readonly string[]).includes(valor)
+    ? (valor as Papel)
+    : null;
+}
 
 const PREFIXOS_PROTEGIDOS = [
   "/dashboard",
@@ -41,8 +49,11 @@ export function middleware(req: NextRequest): NextResponse {
     return NextResponse.redirect(url);
   }
 
-  // Resolução de papel edge-safe (mock). Em supabase, ler claims do JWT aqui.
-  const papel = papelPorEmailSeed(email);
+  // Papel a partir do cookie (claims); fallback ao seed para contas demo.
+  // Em supabase, ler os claims do JWT aqui.
+  const papel =
+    papelDoCookie(req.cookies.get(COOKIE_PAPEL)?.value) ??
+    papelPorEmailSeed(email);
   if (!papel) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";

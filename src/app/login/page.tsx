@@ -66,6 +66,27 @@ export default function LoginPage({
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 border-t border-slate-100 pt-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+              Ou entre por e-mail (academias criadas)
+            </p>
+            <form action={loginAction} className="flex gap-2">
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="voce@suaacademia.com"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-atlas-500 focus:ring-2 focus:ring-atlas-100"
+              />
+              <button
+                type="submit"
+                className="rounded-lg bg-atlas-600 px-4 py-2 text-sm font-semibold text-white hover:bg-atlas-700"
+              >
+                Entrar
+              </button>
+            </form>
+          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
