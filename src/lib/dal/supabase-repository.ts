@@ -18,6 +18,7 @@ import type {
   Avaliacao,
   ChamadaAula,
   Consent,
+  Contrato,
   Matricula,
   Pagamento,
   PapelPermissao,
@@ -225,6 +226,32 @@ export class SupabaseRepository implements AtlasRepository {
     throw new Error(NAO_IMPLEMENTADO);
   }
   listarPresencasDoAluno(): Promise<Presenca[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+
+  // Financeiro: RLS por tenant/papel; cobrança via gateway (edge/server).
+  listarContratos(): Promise<Contrato[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarContrato(): Promise<Contrato> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  encerrarContrato(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarPagamentosDoAluno(): Promise<Pagamento[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  gerarMensalidades(): Promise<number> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  emitirCobranca(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  registrarPagamento(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  cancelarPagamento(): Promise<void> {
     throw new Error(NAO_IMPLEMENTADO);
   }
 }

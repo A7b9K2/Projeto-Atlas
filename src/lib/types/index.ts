@@ -140,16 +140,36 @@ export interface ChamadaAula {
 }
 
 export type StatusPagamento = "pendente" | "pago" | "vencido" | "cancelado";
+export type MetodoPagamento = "pix" | "boleto" | "cartao";
 
-/** Pagamento / mensalidade de um aluno. */
+/** Contrato/plano recorrente de um aluno (gera mensalidades). */
+export interface Contrato {
+  id: Id;
+  tenant_id: TenantId;
+  aluno_id: Id;
+  descricao: string;
+  valor_centavos: number;
+  /** Dia do vencimento no mês (1–28). */
+  dia_vencimento: number;
+  inicio: string; // "YYYY-MM"
+  fim: string | null; // "YYYY-MM" ou null (vigente)
+  ativo: boolean;
+  criado_em: IsoDate;
+}
+
+/** Pagamento / mensalidade de um aluno (instância de cobrança). */
 export interface Pagamento {
   id: Id;
   tenant_id: TenantId;
   aluno_id: Id;
+  contrato_id: Id | null;
   competencia: string; // "YYYY-MM"
   valor_centavos: number;
   vencimento: IsoDate;
   status: StatusPagamento;
+  metodo: MetodoPagamento | null;
+  /** ID da cobrança no gateway (stub no MVP). */
+  id_externo: string | null;
   pago_em: IsoDate | null;
   criado_em: IsoDate;
 }

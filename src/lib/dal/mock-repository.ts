@@ -8,6 +8,7 @@ import type {
   AlunoInput,
   AulaInput,
   ConsentimentoInput,
+  ContratoInput,
   ConviteUsuario,
   PresencaInput,
   QuadraInput,
@@ -23,8 +24,10 @@ import type {
   Avaliacao,
   ChamadaAula,
   Consent,
+  Contrato,
   Id,
   Matricula,
+  MetodoPagamento,
   Pagamento,
   Papel,
   PapelPermissao,
@@ -39,6 +42,7 @@ import type {
 } from "@/lib/types";
 import { logger } from "@/lib/logger";
 import { detectarConflitos, vagasRestantes } from "@/lib/agenda";
+import { getPaymentGateway } from "@/lib/integrations/payments";
 
 function ehMenor(data_nascimento: string): boolean {
   const nasc = new Date(data_nascimento);
@@ -784,5 +788,142 @@ export class MockRepository implements AtlasRepository {
     return this.db.presencas
       .filter((p) => p.tenant_id === tenant_id && p.aluno_id === aluno_id)
       .sort((a, b) => (a.data < b.data ? 1 : -1));
+  }
+
+  // ---------- Financeiro ----------
+  async listarContratos(tenant_id: TenantId): Promise<Contrato[]> {
+    return this.porTenant(this.db.contratos, tenant_id);
+  }
+
+  async criarContrato(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: ContratoInput,
+  ): Promise<Contrato> {
+    const contrato: Contrato = {
+      id: `ct-${agoraMs()}`,
+      tenant_id,
+      aluno_id: input.aluno_id,
+      descricao: input.descricao.trim(),
+      valor_centavos: input.valor_centavos,
+      dia_vencimento: input.dia_vencimento,
+      inicio: input.inicio,
+      fim: null,
+      ativo: true,
+      criado_em: agoraIso(),
+    };
+    this.db.contratos.push(contrato);
+    this.auditar(tenant_id, ator_id, "contrato.criado", "contrato", contrato.id);
+    return contrato;
+  }
+
+  async encerrarContrato(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    contrato_id: Id,
+    fim: string,
+  ): Promise<void> {
+    const c = this.db.contratos.find((x) => x.id === contrato_id && x.tenant_id === tenant_id);
+    if (!c) throw new Error("Contrato não encontrado no tenant.");
+    c.ativo = false;
+    c.fim = fim;
+    this.auditar(tenant_id, ator_id, "contrato.encerrado", "contrato", contrato_id);
+  }
+
+  async listarPagamentosDoAluno(
+    tenant_id: TenantId,
+    aluno_id: Id,
+  ): Promise<Pagamento[]> {
+    return this.porTenant(this.db.pagamentos, tenant_id)
+      .filter((p) => p.aluno_id === aluno_id)
+      .sort((a, b) => (a.competencia < b.competencia ? 1 : -1));
+  }
+
+  async gerarMensalidades(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    competencia: string,
+  ): Promise<number> {
+    const contratos = this.porTenant(this.db.contratos, tenant_id).filter(
+      (c) => c.ativo && c.inicio <= competencia && (!c.fim || c.fim >= competencia),
+    );
+    let gerados = 0;
+    for (const c of contratos) {
+      const existe = this.db.pagamentos.some(
+        (p) =>
+          p.tenant_id === tenant_id &&
+          p.contrato_id === c.id &&
+          p.competencia === competencia,
+      );
+      if (existe) continue; // idempotente
+      const dia = String(c.dia_vencimento).padStart(2, "0");
+      this.db.pagamentos.push({
+        id: `pg-${agoraMs()}`,
+        tenant_id,
+        aluno_id: c.aluno_id,
+        contrato_id: c.id,
+        competencia,
+        valor_centavos: c.valor_centavos,
+        vencimento: `${competencia}-${dia}`,
+        status: "pendente",
+        metodo: null,
+        id_externo: null,
+        pago_em: null,
+        criado_em: agoraIso(),
+      });
+      gerados++;
+    }
+    this.auditar(tenant_id, ator_id, "mensalidades.geradas", "pagamento", competencia);
+    return gerados;
+  }
+
+  async emitirCobranca(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    pagamento_id: Id,
+    metodo: MetodoPagamento,
+  ): Promise<void> {
+    const p = this.db.pagamentos.find((x) => x.id === pagamento_id && x.tenant_id === tenant_id);
+    if (!p) throw new Error("Pagamento não encontrado no tenant.");
+    const cobranca = await getPaymentGateway().criarCobranca({
+      tenant_id,
+      aluno_id: p.aluno_id,
+      valor_centavos: p.valor_centavos,
+      metodo,
+      descricao: `Mensalidade ${p.competencia}`,
+    });
+    p.metodo = metodo;
+    p.id_externo = cobranca.id_externo;
+    this.auditar(tenant_id, ator_id, "cobranca.emitida", "pagamento", pagamento_id);
+  }
+
+  async registrarPagamento(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    pagamento_id: Id,
+    pago: boolean,
+  ): Promise<void> {
+    const p = this.db.pagamentos.find((x) => x.id === pagamento_id && x.tenant_id === tenant_id);
+    if (!p) throw new Error("Pagamento não encontrado no tenant.");
+    p.status = pago ? "pago" : "pendente";
+    p.pago_em = pago ? agoraIso() : null;
+    this.auditar(
+      tenant_id,
+      ator_id,
+      pago ? "pagamento.confirmado" : "pagamento.reaberto",
+      "pagamento",
+      pagamento_id,
+    );
+  }
+
+  async cancelarPagamento(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    pagamento_id: Id,
+  ): Promise<void> {
+    const p = this.db.pagamentos.find((x) => x.id === pagamento_id && x.tenant_id === tenant_id);
+    if (!p) throw new Error("Pagamento não encontrado no tenant.");
+    p.status = "cancelado";
+    this.auditar(tenant_id, ator_id, "pagamento.cancelado", "pagamento", pagamento_id);
   }
 }

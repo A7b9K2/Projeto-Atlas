@@ -12,8 +12,10 @@ import type {
   Avaliacao,
   ChamadaAula,
   Consent,
+  Contrato,
   Id,
   Matricula,
+  MetodoPagamento,
   Pagamento,
   Papel,
   PapelPermissao,
@@ -50,6 +52,13 @@ export interface PresencaInput {
   data: string;
   aluno_id: Id;
   status: StatusPresenca;
+}
+export interface ContratoInput {
+  aluno_id: Id;
+  descricao: string;
+  valor_centavos: number;
+  dia_vencimento: number;
+  inicio: string;
 }
 
 /** Dados para convidar um novo usuário. */
@@ -212,4 +221,17 @@ export interface AtlasRepository {
   registrarPresenca(tenant_id: TenantId, ator_id: UserId, input: PresencaInput): Promise<void>;
   listarPresencas(tenant_id: TenantId, aula_id: Id, data: string): Promise<Presenca[]>;
   listarPresencasDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Presenca[]>;
+
+  // ---- Financeiro ----
+  listarContratos(tenant_id: TenantId): Promise<Contrato[]>;
+  criarContrato(tenant_id: TenantId, ator_id: UserId, input: ContratoInput): Promise<Contrato>;
+  encerrarContrato(tenant_id: TenantId, ator_id: UserId, contrato_id: Id, fim: string): Promise<void>;
+  listarPagamentosDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Pagamento[]>;
+  /** Gera mensalidades da competência a partir dos contratos ativos (idempotente). */
+  gerarMensalidades(tenant_id: TenantId, ator_id: UserId, competencia: string): Promise<number>;
+  /** Emite cobrança no gateway (stub) e grava id_externo + método. */
+  emitirCobranca(tenant_id: TenantId, ator_id: UserId, pagamento_id: Id, metodo: MetodoPagamento): Promise<void>;
+  /** Marca pagamento como pago ou reabre para pendente. */
+  registrarPagamento(tenant_id: TenantId, ator_id: UserId, pagamento_id: Id, pago: boolean): Promise<void>;
+  cancelarPagamento(tenant_id: TenantId, ator_id: UserId, pagamento_id: Id): Promise<void>;
 }

@@ -11,6 +11,7 @@ import type {
   Avaliacao,
   ChamadaAula,
   Consent,
+  Contrato,
   Matricula,
   Pagamento,
   Papel,
@@ -49,6 +50,7 @@ export interface SeedData {
   quadras: Quadra[];
   presencas: Presenca[];
   chamadas: ChamadaAula[];
+  contratos: Contrato[];
   responsaveis: Responsavel[];
   alunos: Aluno[];
   turmas: Turma[];
@@ -273,29 +275,17 @@ export function criarSeed(): SeedData {
     },
   ];
 
+  const contratos: Contrato[] = [
+    { id: "ct-1", tenant_id: TENANT, aluno_id: "a-1", descricao: "Mensal 2x/semana", valor_centavos: 32000, dia_vencimento: 10, inicio: "2026-01", fim: null, ativo: true, criado_em: AGORA },
+    { id: "ct-2", tenant_id: TENANT, aluno_id: "a-2", descricao: "Mensal 2x/semana", valor_centavos: 32000, dia_vencimento: 10, inicio: "2026-03", fim: null, ativo: true, criado_em: AGORA },
+    { id: "ct-3", tenant_id: TENANT, aluno_id: "a-3", descricao: "Mensal avançado", valor_centavos: 45000, dia_vencimento: 5, inicio: "2026-02", fim: null, ativo: true, criado_em: AGORA },
+  ];
+
   const pagamentos: Pagamento[] = [
-    {
-      id: "pg-1",
-      tenant_id: TENANT,
-      aluno_id: "a-1",
-      competencia: "2026-07",
-      valor_centavos: 32000,
-      vencimento: "2026-07-10",
-      status: "pago",
-      pago_em: "2026-07-08T14:00:00.000Z",
-      criado_em: AGORA,
-    },
-    {
-      id: "pg-2",
-      tenant_id: TENANT,
-      aluno_id: "a-2",
-      competencia: "2026-07",
-      valor_centavos: 32000,
-      vencimento: "2026-07-10",
-      status: "pendente",
-      pago_em: null,
-      criado_em: AGORA,
-    },
+    { id: "pg-1", tenant_id: TENANT, aluno_id: "a-1", contrato_id: "ct-1", competencia: "2026-07", valor_centavos: 32000, vencimento: "2026-07-10", status: "pago", metodo: "pix", id_externo: "stub_pix_seed1", pago_em: "2026-07-08T14:00:00.000Z", criado_em: AGORA },
+    { id: "pg-2", tenant_id: TENANT, aluno_id: "a-2", contrato_id: "ct-2", competencia: "2026-07", valor_centavos: 32000, vencimento: "2026-07-10", status: "pendente", metodo: null, id_externo: null, pago_em: null, criado_em: AGORA },
+    { id: "pg-3", tenant_id: TENANT, aluno_id: "a-3", contrato_id: "ct-3", competencia: "2026-06", valor_centavos: 45000, vencimento: "2026-06-05", status: "vencido", metodo: null, id_externo: null, pago_em: null, criado_em: AGORA },
+    { id: "pg-4", tenant_id: TENANT, aluno_id: "a-1", contrato_id: "ct-1", competencia: "2026-06", valor_centavos: 32000, vencimento: "2026-06-10", status: "pago", metodo: "cartao", id_externo: "stub_cartao_seed2", pago_em: "2026-06-09T10:00:00.000Z", criado_em: AGORA },
   ];
 
   const avaliacoes: Avaliacao[] = [
@@ -364,6 +354,7 @@ export function criarSeed(): SeedData {
     quadras,
     presencas,
     chamadas,
+    contratos,
     responsaveis,
     alunos,
     turmas,
