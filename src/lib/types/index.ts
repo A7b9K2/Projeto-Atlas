@@ -70,12 +70,25 @@ export interface Responsavel {
   criado_em: IsoDate;
 }
 
+/** Quadra — recurso físico onde as aulas acontecem. */
+export type TipoQuadra = "saibro" | "rapida" | "indoor" | "grama";
+
+export interface Quadra {
+  id: Id;
+  tenant_id: TenantId;
+  nome: string;
+  tipo: TipoQuadra;
+  ativa: boolean;
+  criada_em: IsoDate;
+}
+
 /** Turma — agrupamento pedagógico recorrente (nível/faixa). */
 export interface Turma {
   id: Id;
   tenant_id: TenantId;
   nome: string;
   professor_id: UserId | null;
+  quadra_id: Id | null;
   capacidade: number;
   criada_em: IsoDate;
 }
@@ -99,6 +112,31 @@ export interface Matricula {
   turma_id: Id;
   ativa: boolean;
   criada_em: IsoDate;
+}
+
+/** Presença de um aluno numa ocorrência de aula (aula + data específica). */
+export type StatusPresenca = "presente" | "ausente" | "reposicao";
+
+export interface Presenca {
+  id: Id;
+  tenant_id: TenantId;
+  aula_id: Id;
+  /** Data da ocorrência (YYYY-MM-DD). */
+  data: string;
+  aluno_id: Id;
+  status: StatusPresenca;
+  criado_em: IsoDate;
+}
+
+/** Chamada = sessão de uma aula numa data (observações + início). */
+export interface ChamadaAula {
+  id: Id;
+  tenant_id: TenantId;
+  aula_id: Id;
+  data: string;
+  observacoes: string | null;
+  iniciada_em: IsoDate | null;
+  criado_em: IsoDate;
 }
 
 export type StatusPagamento = "pendente" | "pago" | "vencido" | "cancelado";

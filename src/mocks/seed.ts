@@ -9,11 +9,14 @@ import type {
   Aula,
   AuditLog,
   Avaliacao,
+  ChamadaAula,
   Consent,
   Matricula,
   Pagamento,
   Papel,
   PapelPermissao,
+  Presenca,
+  Quadra,
   Responsavel,
   Turma,
   Usuario,
@@ -43,6 +46,9 @@ export interface SeedData {
   academias: Academia[];
   usuarios: Usuario[];
   papelPermissoes: PapelPermissao[];
+  quadras: Quadra[];
+  presencas: Presenca[];
+  chamadas: ChamadaAula[];
   responsaveis: Responsavel[];
   alunos: Aluno[];
   turmas: Turma[];
@@ -191,12 +197,19 @@ export function criarSeed(): SeedData {
     },
   ];
 
+  const quadras: Quadra[] = [
+    { id: "q-1", tenant_id: TENANT, nome: "Quadra 1 (saibro)", tipo: "saibro", ativa: true, criada_em: AGORA },
+    { id: "q-2", tenant_id: TENANT, nome: "Quadra 2 (rápida)", tipo: "rapida", ativa: true, criada_em: AGORA },
+    { id: "q-3", tenant_id: TENANT, nome: "Quadra Coberta", tipo: "indoor", ativa: true, criada_em: AGORA },
+  ];
+
   const turmas: Turma[] = [
     {
       id: "t-1",
       tenant_id: TENANT,
       nome: "Iniciante Infantil A",
       professor_id: "u-prof",
+      quadra_id: "q-1",
       capacidade: 8,
       criada_em: AGORA,
     },
@@ -205,6 +218,7 @@ export function criarSeed(): SeedData {
       tenant_id: TENANT,
       nome: "Intermediário Infantil",
       professor_id: "u-prof",
+      quadra_id: "q-2",
       capacidade: 6,
       criada_em: AGORA,
     },
@@ -334,10 +348,22 @@ export function criarSeed(): SeedData {
     },
   ];
 
+  const presencas: Presenca[] = [
+    { id: "pr-1", tenant_id: TENANT, aula_id: "au-1", data: "2026-07-14", aluno_id: "a-1", status: "presente", criado_em: AGORA },
+    { id: "pr-2", tenant_id: TENANT, aula_id: "au-1", data: "2026-07-14", aluno_id: "a-2", status: "ausente", criado_em: AGORA },
+  ];
+
+  const chamadas: ChamadaAula[] = [
+    { id: "ch-1", tenant_id: TENANT, aula_id: "au-1", data: "2026-07-14", observacoes: "Treino de saque.", iniciada_em: AGORA, criado_em: AGORA },
+  ];
+
   return {
     academias,
     usuarios,
     papelPermissoes,
+    quadras,
+    presencas,
+    chamadas,
     responsaveis,
     alunos,
     turmas,

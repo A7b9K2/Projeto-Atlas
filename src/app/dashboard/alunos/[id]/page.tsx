@@ -33,7 +33,7 @@ export default async function AlunoPerfilPage({
   const aluno = await repo.obterAluno(tenant, params.id);
   if (!aluno) notFound();
 
-  const [responsaveis, consents, matriculas, turmas, avaliacoes, pagamentos, audit] =
+  const [responsaveis, consents, matriculas, turmas, avaliacoes, pagamentos, audit, presencas] =
     await Promise.all([
       repo.listarResponsaveis(tenant),
       repo.listarConsentsDoAluno(tenant, aluno.id),
@@ -42,7 +42,13 @@ export default async function AlunoPerfilPage({
       repo.listarAvaliacoes(tenant),
       repo.listarPagamentos(tenant),
       repo.listarAuditLogs(tenant),
+      repo.listarPresencasDoAluno(tenant, aluno.id),
     ]);
+  const presencaLabel: Record<string, string> = {
+    presente: "Presente",
+    ausente: "Ausente",
+    reposicao: "Reposição",
+  };
 
   const responsavel = responsaveis.find((r) => r.id === aluno.responsavel_id) ?? null;
   const turmasAluno = matriculas
@@ -169,7 +175,24 @@ export default async function AlunoPerfilPage({
               <div className="flex justify-between"><dt className="text-slate-500">Avaliações</dt><dd className="font-medium text-slate-700">{avaliacoesAluno.length}</dd></div>
               <div className="flex justify-between"><dt className="text-slate-500">Pagamentos</dt><dd className="font-medium text-slate-700">{pagamentosAluno.length}</dd></div>
               <div className="flex justify-between"><dt className="text-slate-500">Consentimentos</dt><dd className="font-medium text-slate-700">{consents.length}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-500">Presenças</dt><dd className="font-medium text-slate-700">{presencas.length}</dd></div>
             </dl>
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 className="mb-3 text-sm font-semibold text-slate-700">Histórico de presença</h2>
+            {presencas.length === 0 ? (
+              <p className="text-sm text-slate-400">Sem registros.</p>
+            ) : (
+              <ul className="space-y-1 text-sm">
+                {presencas.slice(0, 5).map((p) => (
+                  <li key={p.id} className="flex justify-between">
+                    <span className="text-slate-500">{p.data}</span>
+                    <span className="font-medium text-slate-700">{presencaLabel[p.status] ?? p.status}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
       </div>

@@ -10,19 +10,47 @@ import type {
   Aula,
   AuditLog,
   Avaliacao,
+  ChamadaAula,
   Consent,
   Id,
   Matricula,
   Pagamento,
   Papel,
   PapelPermissao,
+  Presenca,
+  Quadra,
   Responsavel,
   SessaoAtual,
+  StatusPresenca,
   TenantId,
+  TipoQuadra,
   Turma,
   UserId,
   Usuario,
 } from "@/lib/types";
+
+export interface QuadraInput {
+  nome: string;
+  tipo: TipoQuadra;
+}
+export interface TurmaInput {
+  nome: string;
+  professor_id: Id | null;
+  quadra_id: Id | null;
+  capacidade: number;
+}
+export interface AulaInput {
+  turma_id: Id;
+  dia_semana: number;
+  hora_inicio: string;
+  hora_fim: string;
+}
+export interface PresencaInput {
+  aula_id: Id;
+  data: string;
+  aluno_id: Id;
+  status: StatusPresenca;
+}
 
 /** Dados para convidar um novo usuário. */
 export interface ConviteUsuario {
@@ -154,4 +182,34 @@ export interface AtlasRepository {
     input: ConsentimentoInput,
   ): Promise<Consent>;
   listarConsentsDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Consent[]>;
+
+  // ---- Quadras ----
+  listarQuadras(tenant_id: TenantId): Promise<Quadra[]>;
+  criarQuadra(tenant_id: TenantId, ator_id: UserId, input: QuadraInput): Promise<Quadra>;
+  atualizarQuadra(tenant_id: TenantId, ator_id: UserId, id: Id, patch: Partial<QuadraInput>): Promise<void>;
+  arquivarQuadra(tenant_id: TenantId, ator_id: UserId, id: Id, arquivada: boolean): Promise<void>;
+
+  // ---- Turmas ----
+  obterTurma(tenant_id: TenantId, id: Id): Promise<Turma | null>;
+  criarTurma(tenant_id: TenantId, ator_id: UserId, input: TurmaInput): Promise<Turma>;
+  atualizarTurma(tenant_id: TenantId, ator_id: UserId, id: Id, patch: Partial<TurmaInput>): Promise<void>;
+  removerTurma(tenant_id: TenantId, ator_id: UserId, id: Id): Promise<void>;
+
+  // ---- Aulas (agendamento com detecção de conflito no backend) ----
+  obterAula(tenant_id: TenantId, id: Id): Promise<Aula | null>;
+  criarAula(tenant_id: TenantId, ator_id: UserId, input: AulaInput): Promise<Aula>;
+  atualizarAula(tenant_id: TenantId, ator_id: UserId, id: Id, patch: Partial<AulaInput>): Promise<void>;
+  removerAula(tenant_id: TenantId, ator_id: UserId, id: Id): Promise<void>;
+
+  // ---- Matrículas (controle de vagas) ----
+  matricular(tenant_id: TenantId, ator_id: UserId, aluno_id: Id, turma_id: Id): Promise<Matricula>;
+  desmatricular(tenant_id: TenantId, ator_id: UserId, matricula_id: Id): Promise<void>;
+
+  // ---- Presença / chamada ----
+  obterChamada(tenant_id: TenantId, aula_id: Id, data: string): Promise<ChamadaAula | null>;
+  iniciarChamada(tenant_id: TenantId, ator_id: UserId, aula_id: Id, data: string): Promise<ChamadaAula>;
+  salvarObservacoesAula(tenant_id: TenantId, ator_id: UserId, aula_id: Id, data: string, observacoes: string | null): Promise<void>;
+  registrarPresenca(tenant_id: TenantId, ator_id: UserId, input: PresencaInput): Promise<void>;
+  listarPresencas(tenant_id: TenantId, aula_id: Id, data: string): Promise<Presenca[]>;
+  listarPresencasDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Presenca[]>;
 }

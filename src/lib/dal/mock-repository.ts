@@ -6,9 +6,13 @@
 import type {
   AtlasRepository,
   AlunoInput,
+  AulaInput,
   ConsentimentoInput,
   ConviteUsuario,
+  PresencaInput,
+  QuadraInput,
   ResponsavelInput,
+  TurmaInput,
 } from "./repository";
 import { criarSeed, type SeedData } from "@/mocks/seed";
 import type {
@@ -17,12 +21,15 @@ import type {
   Aula,
   AuditLog,
   Avaliacao,
+  ChamadaAula,
   Consent,
   Id,
   Matricula,
   Pagamento,
   Papel,
   PapelPermissao,
+  Presenca,
+  Quadra,
   Responsavel,
   SessaoAtual,
   TenantId,
@@ -31,6 +38,7 @@ import type {
   Usuario,
 } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import { detectarConflitos, vagasRestantes } from "@/lib/agenda";
 
 function ehMenor(data_nascimento: string): boolean {
   const nasc = new Date(data_nascimento);
@@ -462,5 +470,319 @@ export class MockRepository implements AtlasRepository {
     return this.porTenant(this.db.consents, tenant_id)
       .filter((c) => c.aluno_id === aluno_id)
       .sort((a, b) => (a.criado_em < b.criado_em ? 1 : -1));
+  }
+
+  // ---------- Quadras ----------
+  async listarQuadras(tenant_id: TenantId): Promise<Quadra[]> {
+    return this.porTenant(this.db.quadras, tenant_id);
+  }
+
+  async criarQuadra(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: QuadraInput,
+  ): Promise<Quadra> {
+    const quadra: Quadra = {
+      id: `q-${agoraMs()}`,
+      tenant_id,
+      nome: input.nome.trim(),
+      tipo: input.tipo,
+      ativa: true,
+      criada_em: agoraIso(),
+    };
+    this.db.quadras.push(quadra);
+    this.auditar(tenant_id, ator_id, "quadra.criada", "quadra", quadra.id);
+    return quadra;
+  }
+
+  async atualizarQuadra(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    id: Id,
+    patch: Partial<QuadraInput>,
+  ): Promise<void> {
+    const q = this.db.quadras.find((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!q) throw new Error("Quadra não encontrada no tenant.");
+    if (patch.nome !== undefined) q.nome = patch.nome.trim();
+    if (patch.tipo !== undefined) q.tipo = patch.tipo;
+    this.auditar(tenant_id, ator_id, "quadra.atualizada", "quadra", id);
+  }
+
+  async arquivarQuadra(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    id: Id,
+    arquivada: boolean,
+  ): Promise<void> {
+    const q = this.db.quadras.find((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!q) throw new Error("Quadra não encontrada no tenant.");
+    q.ativa = !arquivada;
+    this.auditar(
+      tenant_id,
+      ator_id,
+      arquivada ? "quadra.arquivada" : "quadra.reativada",
+      "quadra",
+      id,
+    );
+  }
+
+  // ---------- Turmas ----------
+  async obterTurma(tenant_id: TenantId, id: Id): Promise<Turma | null> {
+    return this.db.turmas.find((t) => t.id === id && t.tenant_id === tenant_id) ?? null;
+  }
+
+  async criarTurma(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: TurmaInput,
+  ): Promise<Turma> {
+    const turma: Turma = {
+      id: `t-${agoraMs()}`,
+      tenant_id,
+      nome: input.nome.trim(),
+      professor_id: input.professor_id,
+      quadra_id: input.quadra_id,
+      capacidade: input.capacidade,
+      criada_em: agoraIso(),
+    };
+    this.db.turmas.push(turma);
+    this.auditar(tenant_id, ator_id, "turma.criada", "turma", turma.id);
+    return turma;
+  }
+
+  async atualizarTurma(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    id: Id,
+    patch: Partial<TurmaInput>,
+  ): Promise<void> {
+    const t = this.db.turmas.find((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!t) throw new Error("Turma não encontrada no tenant.");
+    if (patch.nome !== undefined) t.nome = patch.nome.trim();
+    if (patch.professor_id !== undefined) t.professor_id = patch.professor_id;
+    if (patch.quadra_id !== undefined) t.quadra_id = patch.quadra_id;
+    if (patch.capacidade !== undefined) t.capacidade = patch.capacidade;
+    this.auditar(tenant_id, ator_id, "turma.atualizada", "turma", id);
+  }
+
+  async removerTurma(tenant_id: TenantId, ator_id: UserId, id: Id): Promise<void> {
+    const existe = this.db.turmas.some((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!existe) throw new Error("Turma não encontrada no tenant.");
+    this.db.turmas = this.db.turmas.filter((x) => x.id !== id);
+    this.db.aulas = this.db.aulas.filter((x) => x.turma_id !== id);
+    this.db.matriculas = this.db.matriculas.filter((x) => x.turma_id !== id);
+    this.auditar(tenant_id, ator_id, "turma.removida", "turma", id);
+  }
+
+  // ---------- Aulas (com detecção de conflito) ----------
+  async obterAula(tenant_id: TenantId, id: Id): Promise<Aula | null> {
+    return this.db.aulas.find((a) => a.id === id && a.tenant_id === tenant_id) ?? null;
+  }
+
+  private validarConflitos(
+    tenant_id: TenantId,
+    candidata: AulaInput & { id?: string },
+  ): void {
+    const aulas = this.porTenant(this.db.aulas, tenant_id);
+    const turmas = this.porTenant(this.db.turmas, tenant_id);
+    const matriculas = this.porTenant(this.db.matriculas, tenant_id);
+    const conflitos = detectarConflitos(candidata, aulas, turmas, matriculas);
+    if (conflitos.length > 0) {
+      const tipos = Array.from(new Set(conflitos.map((c) => c.tipo)));
+      throw new Error(`Conflito de agendamento (${tipos.join(", ")}): ${conflitos[0]!.detalhe}`);
+    }
+  }
+
+  async criarAula(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: AulaInput,
+  ): Promise<Aula> {
+    this.validarConflitos(tenant_id, input);
+    const aula: Aula = {
+      id: `au-${agoraMs()}`,
+      tenant_id,
+      turma_id: input.turma_id,
+      dia_semana: input.dia_semana,
+      hora_inicio: input.hora_inicio,
+      hora_fim: input.hora_fim,
+      criada_em: agoraIso(),
+    };
+    this.db.aulas.push(aula);
+    this.auditar(tenant_id, ator_id, "aula.criada", "aula", aula.id);
+    return aula;
+  }
+
+  async atualizarAula(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    id: Id,
+    patch: Partial<AulaInput>,
+  ): Promise<void> {
+    const a = this.db.aulas.find((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!a) throw new Error("Aula não encontrada no tenant.");
+    const candidata: AulaInput & { id: string } = {
+      id,
+      turma_id: patch.turma_id ?? a.turma_id,
+      dia_semana: patch.dia_semana ?? a.dia_semana,
+      hora_inicio: patch.hora_inicio ?? a.hora_inicio,
+      hora_fim: patch.hora_fim ?? a.hora_fim,
+    };
+    this.validarConflitos(tenant_id, candidata);
+    a.turma_id = candidata.turma_id;
+    a.dia_semana = candidata.dia_semana;
+    a.hora_inicio = candidata.hora_inicio;
+    a.hora_fim = candidata.hora_fim;
+    this.auditar(tenant_id, ator_id, "aula.atualizada", "aula", id);
+  }
+
+  async removerAula(tenant_id: TenantId, ator_id: UserId, id: Id): Promise<void> {
+    const existe = this.db.aulas.some((x) => x.id === id && x.tenant_id === tenant_id);
+    if (!existe) throw new Error("Aula não encontrada no tenant.");
+    this.db.aulas = this.db.aulas.filter((x) => x.id !== id);
+    this.auditar(tenant_id, ator_id, "aula.removida", "aula", id);
+  }
+
+  // ---------- Matrículas (controle de vagas) ----------
+  async matricular(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aluno_id: Id,
+    turma_id: Id,
+  ): Promise<Matricula> {
+    const turma = this.db.turmas.find((t) => t.id === turma_id && t.tenant_id === tenant_id);
+    if (!turma) throw new Error("Turma não encontrada no tenant.");
+    if (
+      this.db.matriculas.some(
+        (m) => m.turma_id === turma_id && m.aluno_id === aluno_id && m.ativa,
+      )
+    ) {
+      throw new Error("Aluno já matriculado nesta turma.");
+    }
+    if (vagasRestantes(turma, this.porTenant(this.db.matriculas, tenant_id)) <= 0) {
+      throw new Error("Turma sem vagas disponíveis.");
+    }
+    const matricula: Matricula = {
+      id: `m-${agoraMs()}`,
+      tenant_id,
+      aluno_id,
+      turma_id,
+      ativa: true,
+      criada_em: agoraIso(),
+    };
+    this.db.matriculas.push(matricula);
+    this.auditar(tenant_id, ator_id, "matricula.criada", "matricula", matricula.id);
+    return matricula;
+  }
+
+  async desmatricular(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    matricula_id: Id,
+  ): Promise<void> {
+    const m = this.db.matriculas.find(
+      (x) => x.id === matricula_id && x.tenant_id === tenant_id,
+    );
+    if (!m) throw new Error("Matrícula não encontrada no tenant.");
+    m.ativa = false;
+    this.auditar(tenant_id, ator_id, "matricula.cancelada", "matricula", matricula_id);
+  }
+
+  // ---------- Presença / chamada ----------
+  async obterChamada(
+    tenant_id: TenantId,
+    aula_id: Id,
+    data: string,
+  ): Promise<ChamadaAula | null> {
+    return (
+      this.db.chamadas.find(
+        (c) => c.tenant_id === tenant_id && c.aula_id === aula_id && c.data === data,
+      ) ?? null
+    );
+  }
+
+  async iniciarChamada(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aula_id: Id,
+    data: string,
+  ): Promise<ChamadaAula> {
+    let chamada = await this.obterChamada(tenant_id, aula_id, data);
+    if (!chamada) {
+      chamada = {
+        id: `ch-${agoraMs()}`,
+        tenant_id,
+        aula_id,
+        data,
+        observacoes: null,
+        iniciada_em: agoraIso(),
+        criado_em: agoraIso(),
+      };
+      this.db.chamadas.push(chamada);
+      this.auditar(tenant_id, ator_id, "chamada.iniciada", "chamada", chamada.id);
+    } else if (!chamada.iniciada_em) {
+      chamada.iniciada_em = agoraIso();
+    }
+    return chamada;
+  }
+
+  async salvarObservacoesAula(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    aula_id: Id,
+    data: string,
+    observacoes: string | null,
+  ): Promise<void> {
+    const chamada = await this.iniciarChamada(tenant_id, ator_id, aula_id, data);
+    chamada.observacoes = observacoes;
+    this.auditar(tenant_id, ator_id, "chamada.observacoes", "chamada", chamada.id);
+  }
+
+  async registrarPresenca(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: PresencaInput,
+  ): Promise<void> {
+    await this.iniciarChamada(tenant_id, ator_id, input.aula_id, input.data);
+    const existente = this.db.presencas.find(
+      (p) =>
+        p.tenant_id === tenant_id &&
+        p.aula_id === input.aula_id &&
+        p.data === input.data &&
+        p.aluno_id === input.aluno_id,
+    );
+    if (existente) {
+      existente.status = input.status;
+    } else {
+      this.db.presencas.push({
+        id: `pr-${agoraMs()}`,
+        tenant_id,
+        aula_id: input.aula_id,
+        data: input.data,
+        aluno_id: input.aluno_id,
+        status: input.status,
+        criado_em: agoraIso(),
+      });
+    }
+    this.auditar(tenant_id, ator_id, "presenca.registrada", "presenca", input.aluno_id);
+  }
+
+  async listarPresencas(
+    tenant_id: TenantId,
+    aula_id: Id,
+    data: string,
+  ): Promise<Presenca[]> {
+    return this.db.presencas.filter(
+      (p) => p.tenant_id === tenant_id && p.aula_id === aula_id && p.data === data,
+    );
+  }
+
+  async listarPresencasDoAluno(
+    tenant_id: TenantId,
+    aluno_id: Id,
+  ): Promise<Presenca[]> {
+    return this.db.presencas
+      .filter((p) => p.tenant_id === tenant_id && p.aluno_id === aluno_id)
+      .sort((a, b) => (a.data < b.data ? 1 : -1));
   }
 }

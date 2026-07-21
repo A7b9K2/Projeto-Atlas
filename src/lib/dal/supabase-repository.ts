@@ -16,10 +16,13 @@ import type {
   Aula,
   AuditLog,
   Avaliacao,
+  ChamadaAula,
   Consent,
   Matricula,
   Pagamento,
   PapelPermissao,
+  Presenca,
+  Quadra,
   Responsavel,
   SessaoAtual,
   Turma,
@@ -159,6 +162,69 @@ export class SupabaseRepository implements AtlasRepository {
     throw new Error(NAO_IMPLEMENTADO);
   }
   listarConsentsDoAluno(): Promise<Consent[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+
+  // Agenda/turmas/quadras/presença: RLS por tenant/papel no banco. A detecção
+  // de conflito, no Supabase, é reforçada por trigger/função (ver migration).
+  listarQuadras(): Promise<Quadra[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarQuadra(): Promise<Quadra> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  atualizarQuadra(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  arquivarQuadra(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  obterTurma(): Promise<Turma | null> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarTurma(): Promise<Turma> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  atualizarTurma(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  removerTurma(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  obterAula(): Promise<Aula | null> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarAula(): Promise<Aula> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  atualizarAula(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  removerAula(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  matricular(): Promise<Matricula> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  desmatricular(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  obterChamada(): Promise<ChamadaAula | null> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  iniciarChamada(): Promise<ChamadaAula> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  salvarObservacoesAula(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  registrarPresenca(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarPresencas(): Promise<Presenca[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarPresencasDoAluno(): Promise<Presenca[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
 }
