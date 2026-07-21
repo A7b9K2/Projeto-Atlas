@@ -1,4 +1,4 @@
-import type { Papel } from "./types";
+import type { Papel } from ".";
 
 /**
  * Permissões padrão por papel (espelha a tabela `permissoes_padrao` do banco).

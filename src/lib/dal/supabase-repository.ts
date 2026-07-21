@@ -12,15 +12,17 @@ import type { AtlasRepository } from "./repository";
 import type {
   Academia,
   Aluno,
+  Aula,
   AuditLog,
+  Avaliacao,
   Consent,
   Matricula,
-  Mensalidade,
+  Pagamento,
   Responsavel,
   SessaoAtual,
   Turma,
   Usuario,
-} from "@/lib/domain/types";
+} from "@/lib/types";
 
 const NAO_IMPLEMENTADO =
   "SupabaseRepository ainda não implementado no MVP. Use DATA_PROVIDER=mock para o preview.";
@@ -49,10 +51,16 @@ export class SupabaseRepository implements AtlasRepository {
   listarTurmas(): Promise<Turma[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
+  listarAulas(): Promise<Aula[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
   listarMatriculas(): Promise<Matricula[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
-  listarMensalidades(): Promise<Mensalidade[]> {
+  listarPagamentos(): Promise<Pagamento[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarAvaliacoes(): Promise<Avaliacao[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
   listarConsents(): Promise<Consent[]> {

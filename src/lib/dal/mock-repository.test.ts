@@ -8,6 +8,7 @@ describe("MockRepository — isolamento multi-tenant simulado", () => {
     expect(sessao).not.toBeNull();
     expect(sessao?.usuario.papel).toBe("proprietario");
     expect(sessao?.academia.id).toBe(sessao?.usuario.tenant_id);
+    expect(sessao?.academia.nome_fantasia).toBe("Atlas Tennis Academy");
   });
 
   it("rejeita e-mail inexistente", async () => {

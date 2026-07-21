@@ -6,8 +6,8 @@
  * e o middleware passa a validar o token — não o cookie mock.
  */
 import { cookies } from "next/headers";
-import { getRepository } from "@/lib/data";
-import type { SessaoAtual } from "@/lib/domain/types";
+import { getRepository } from "@/lib/dal";
+import type { SessaoAtual } from "@/lib/types";
 
 const COOKIE = "atlas_session";
 

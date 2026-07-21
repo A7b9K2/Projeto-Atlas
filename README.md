@@ -15,15 +15,15 @@ npm run dev
 # → http://localhost:3000
 ```
 
-O preview usa a **camada de dados semente** (`DATA_PROVIDER=mock`). Contas de demonstração (aba no login):
+O preview usa a **camada de dados semente** (`DATA_PROVIDER=mock`). No login basta **clicar no usuário demo** (sem senha):
 
-| E-mail | Papel |
+| Usuário | Papel |
 |---|---|
-| proprietario@atlas.demo | Proprietária |
-| gestor@atlas.demo | Gestor |
-| professor@atlas.demo | Professor |
-| responsavel@atlas.demo | Responsável |
-| aluno@atlas.demo | Aluno |
+| Paula Proprietária | proprietario |
+| Gustavo Gestor | gestor |
+| Pedro Professor | professor |
+| Renata Responsável | responsavel |
+| Alan Aluno | aluno |
 
 ## Comandos
 
@@ -51,19 +51,21 @@ src/
   app/                # rotas (App Router): login, onboarding, dashboard
     actions/          # server actions (auth)
   components/         # UI compartilhada
+  features/           # módulos de negócio verticais (preenchidos a partir da Fase 1)
   lib/
-    domain/           # tipos + matriz de permissões (SSOT)
-    data/             # DAL: interface + mock + stub supabase (troca por env)
-    auth/             # sessão do preview
+    dal/              # DAL: interface + mock + stub supabase (troca por env)
     integrations/     # payments / communication / llm (stubs + guardrails)
-    logger.ts         # logs estruturados (JSON)
+    logger/           # logs estruturados (JSON)
+    types/            # tipos de domínio + matriz de permissões (SSOT)
+    auth/             # sessão do preview
+  mocks/              # dados semente (seed)
 supabase/
   migrations/         # 0001_init.sql (schema), 0002_rls.sql (políticas)
 ```
 
 ## Camada de dados (mock ↔ Supabase)
 
-Todo o app depende **somente** de `AtlasRepository` (`src/lib/data/repository.ts`). O provider é escolhido por env:
+Todo o app depende **somente** de `AtlasRepository` (`src/lib/dal/repository.ts`). O provider é escolhido por env:
 
 - `DATA_PROVIDER=mock` (padrão) → seed em memória, preview sem chaves.
 - `DATA_PROVIDER=supabase` → banco real (chaves em `.env.local`; ver `.env.example`).

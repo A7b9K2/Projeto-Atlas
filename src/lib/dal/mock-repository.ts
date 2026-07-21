@@ -4,20 +4,22 @@
  * (no Supabase real esse isolamento é imposto pelo RLS, não pelo app).
  */
 import type { AtlasRepository } from "./repository";
-import { criarSeed, type SeedData } from "./seed";
+import { criarSeed, type SeedData } from "@/mocks/seed";
 import type {
   Academia,
   Aluno,
+  Aula,
   AuditLog,
+  Avaliacao,
   Consent,
   Matricula,
-  Mensalidade,
+  Pagamento,
   Responsavel,
   SessaoAtual,
   TenantId,
   Turma,
   Usuario,
-} from "@/lib/domain/types";
+} from "@/lib/types";
 import { logger } from "@/lib/logger";
 
 export class MockRepository implements AtlasRepository {
@@ -104,12 +106,20 @@ export class MockRepository implements AtlasRepository {
     return this.porTenant(this.db.turmas, tenant_id);
   }
 
+  async listarAulas(tenant_id: TenantId): Promise<Aula[]> {
+    return this.porTenant(this.db.aulas, tenant_id);
+  }
+
   async listarMatriculas(tenant_id: TenantId): Promise<Matricula[]> {
     return this.porTenant(this.db.matriculas, tenant_id);
   }
 
-  async listarMensalidades(tenant_id: TenantId): Promise<Mensalidade[]> {
-    return this.porTenant(this.db.mensalidades, tenant_id);
+  async listarPagamentos(tenant_id: TenantId): Promise<Pagamento[]> {
+    return this.porTenant(this.db.pagamentos, tenant_id);
+  }
+
+  async listarAvaliacoes(tenant_id: TenantId): Promise<Avaliacao[]> {
+    return this.porTenant(this.db.avaliacoes, tenant_id);
   }
 
   async listarConsents(tenant_id: TenantId): Promise<Consent[]> {

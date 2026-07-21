@@ -7,16 +7,18 @@
 import type {
   Academia,
   Aluno,
+  Aula,
   AuditLog,
+  Avaliacao,
   Consent,
   Matricula,
-  Mensalidade,
+  Pagamento,
   Responsavel,
   SessaoAtual,
   TenantId,
   Turma,
   Usuario,
-} from "@/lib/domain/types";
+} from "@/lib/types";
 
 export interface AtlasRepository {
   readonly provider: string;
@@ -39,8 +41,10 @@ export interface AtlasRepository {
   listarAlunos(tenant_id: TenantId): Promise<Aluno[]>;
   listarResponsaveis(tenant_id: TenantId): Promise<Responsavel[]>;
   listarTurmas(tenant_id: TenantId): Promise<Turma[]>;
+  listarAulas(tenant_id: TenantId): Promise<Aula[]>;
   listarMatriculas(tenant_id: TenantId): Promise<Matricula[]>;
-  listarMensalidades(tenant_id: TenantId): Promise<Mensalidade[]>;
+  listarPagamentos(tenant_id: TenantId): Promise<Pagamento[]>;
+  listarAvaliacoes(tenant_id: TenantId): Promise<Avaliacao[]>;
   listarConsents(tenant_id: TenantId): Promise<Consent[]>;
   listarAuditLogs(tenant_id: TenantId): Promise<AuditLog[]>;
 }

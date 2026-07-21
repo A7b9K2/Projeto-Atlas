@@ -1,5 +1,5 @@
 import { getSessao } from "@/lib/auth/session";
-import { getRepository } from "@/lib/data";
+import { getRepository } from "@/lib/dal";
 import { StatCard } from "@/components/StatCard";
 import { redirect } from "next/navigation";
 
@@ -17,20 +17,20 @@ export default async function DashboardPage() {
   const tenant = sessao.academia.id;
   const repo = getRepository();
 
-  const [alunos, turmas, mensalidades, consents, usuarios] = await Promise.all([
+  const [alunos, turmas, pagamentos, consents, usuarios] = await Promise.all([
     repo.listarAlunos(tenant),
     repo.listarTurmas(tenant),
-    repo.listarMensalidades(tenant),
+    repo.listarPagamentos(tenant),
     repo.listarConsents(tenant),
     repo.listarUsuarios(tenant),
   ]);
 
-  const recebido = mensalidades
-    .filter((m) => m.status === "paga")
-    .reduce((s, m) => s + m.valor_centavos, 0);
-  const pendente = mensalidades
-    .filter((m) => m.status === "pendente" || m.status === "vencida")
-    .reduce((s, m) => s + m.valor_centavos, 0);
+  const recebido = pagamentos
+    .filter((p) => p.status === "pago")
+    .reduce((s, p) => s + p.valor_centavos, 0);
+  const pendente = pagamentos
+    .filter((p) => p.status === "pendente" || p.status === "vencido")
+    .reduce((s, p) => s + p.valor_centavos, 0);
   const consentimentosPendentes = consents.filter(
     (c) => c.tipo === "parental_menor" && !c.concedido,
   ).length;

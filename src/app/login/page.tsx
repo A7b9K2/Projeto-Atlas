@@ -1,11 +1,11 @@
 import { loginAction } from "@/app/actions/auth";
 
 const CONTAS_DEMO = [
-  { email: "proprietario@atlas.demo", papel: "Proprietária" },
-  { email: "gestor@atlas.demo", papel: "Gestor" },
-  { email: "professor@atlas.demo", papel: "Professor" },
-  { email: "responsavel@atlas.demo", papel: "Responsável" },
-  { email: "aluno@atlas.demo", papel: "Aluno" },
+  { email: "proprietario@atlas.demo", nome: "Paula Proprietária", papel: "Proprietária", icone: "👑" },
+  { email: "gestor@atlas.demo", nome: "Gustavo Gestor", papel: "Gestor", icone: "🗂️" },
+  { email: "professor@atlas.demo", nome: "Pedro Professor", papel: "Professor", icone: "🎾" },
+  { email: "responsavel@atlas.demo", nome: "Renata Responsável", papel: "Responsável", icone: "👪" },
+  { email: "aluno@atlas.demo", nome: "Alan Aluno", papel: "Aluno", icone: "🧒" },
 ];
 
 export default function LoginPage({
@@ -22,9 +22,9 @@ export default function LoginPage({
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-atlas-600 text-2xl">
             🎾
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Atlas</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Atlas Tennis Academy</h1>
           <p className="text-sm text-slate-500">
-            Gestão de academias de tênis infantil
+            Entrar como usuário de demonstração
           </p>
         </div>
 
@@ -33,55 +33,39 @@ export default function LoginPage({
             <div className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {erro === "credenciais"
                 ? "E-mail não encontrado na base semente."
-                : "Informe um e-mail."}
+                : "Selecione um usuário."}
             </div>
           )}
 
-          <form action={loginAction} className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-1 block text-sm font-medium text-slate-700"
-              >
-                E-mail
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="proprietario@atlas.demo"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-atlas-500 focus:ring-2 focus:ring-atlas-100"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-atlas-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-atlas-700"
-            >
-              Entrar
-            </button>
-          </form>
-
-          <div className="mt-6 border-t border-slate-100 pt-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
-              Contas semente (preview)
-            </p>
-            <ul className="space-y-1">
-              {CONTAS_DEMO.map((c) => (
-                <li
-                  key={c.email}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span className="font-mono text-xs text-slate-600">
-                    {c.email}
-                  </span>
-                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
-                    {c.papel}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+            Selecione o papel (preview — sem senha)
+          </p>
+          <ul className="space-y-2">
+            {CONTAS_DEMO.map((c) => (
+              <li key={c.email}>
+                <form action={loginAction}>
+                  <input type="hidden" name="email" value={c.email} />
+                  <button
+                    type="submit"
+                    className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left transition hover:border-atlas-500 hover:bg-atlas-50"
+                  >
+                    <span className="text-xl">{c.icone}</span>
+                    <span className="flex-1">
+                      <span className="block text-sm font-medium text-slate-800">
+                        {c.nome}
+                      </span>
+                      <span className="block font-mono text-xs text-slate-400">
+                        {c.email}
+                      </span>
+                    </span>
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                      {c.papel}
+                    </span>
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">

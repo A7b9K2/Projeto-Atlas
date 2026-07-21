@@ -1,6 +1,6 @@
 import { logoutAction } from "@/app/actions/auth";
-import type { Papel } from "@/lib/domain/types";
-import { temPermissao, type Permissao } from "@/lib/domain/permissions";
+import type { Papel } from "@/lib/types";
+import { temPermissao, type Permissao } from "@/lib/types/permissions";
 
 interface ItemNav {
   href: string;
@@ -16,6 +16,7 @@ const NAV: ItemNav[] = [
   { href: "/dashboard/alunos", label: "Alunos", icone: "🎾", requer: "alunos:ler" },
   { href: "/dashboard/agenda", label: "Agenda", icone: "📅", requer: "agenda:ler" },
   { href: "/dashboard/financeiro", label: "Financeiro", icone: "💰", requer: "financeiro:ler" },
+  { href: "/dashboard/pedagogico", label: "Pedagógico", icone: "📈", requer: "pedagogico:ler" },
   { href: "/dashboard/lgpd", label: "LGPD & Auditoria", icone: "🔒", requer: "academia:gerir" },
 ];
 

@@ -1,19 +1,21 @@
 /**
  * Dados SEMENTE (seed) em memória para o preview rodar sem chaves externas.
- * Uma academia demo com os 5 papéis + alunos, turmas, matrículas, finanças
- * e artefatos LGPD (consents + audit).
+ * Uma academia demo com os 5 papéis + alunos, turmas, aulas, matrículas,
+ * pagamentos, avaliações e artefatos LGPD (consents + audit).
  */
 import type {
   Academia,
   Aluno,
+  Aula,
   AuditLog,
+  Avaliacao,
   Consent,
   Matricula,
-  Mensalidade,
+  Pagamento,
   Responsavel,
   Turma,
   Usuario,
-} from "@/lib/domain/types";
+} from "@/lib/types";
 
 const TENANT = "acad-demo-0001";
 const AGORA = "2026-07-21T12:00:00.000Z";
@@ -24,8 +26,10 @@ export interface SeedData {
   responsaveis: Responsavel[];
   alunos: Aluno[];
   turmas: Turma[];
+  aulas: Aula[];
   matriculas: Matricula[];
-  mensalidades: Mensalidade[];
+  pagamentos: Pagamento[];
+  avaliacoes: Avaliacao[];
   consents: Consent[];
   auditLogs: AuditLog[];
 }
@@ -34,7 +38,7 @@ export function criarSeed(): SeedData {
   const academias: Academia[] = [
     {
       id: TENANT,
-      nome_fantasia: "Academia Saque de Ouro",
+      nome_fantasia: "Atlas Tennis Academy",
       criada_em: AGORA,
     },
   ];
@@ -127,9 +131,6 @@ export function criarSeed(): SeedData {
       tenant_id: TENANT,
       nome: "Iniciante Infantil A",
       professor_id: "u-prof",
-      dia_semana: 2,
-      hora_inicio: "09:00",
-      hora_fim: "10:00",
       capacidade: 8,
       criada_em: AGORA,
     },
@@ -138,10 +139,37 @@ export function criarSeed(): SeedData {
       tenant_id: TENANT,
       nome: "Intermediário Infantil",
       professor_id: "u-prof",
+      capacidade: 6,
+      criada_em: AGORA,
+    },
+  ];
+
+  const aulas: Aula[] = [
+    {
+      id: "au-1",
+      tenant_id: TENANT,
+      turma_id: "t-1",
+      dia_semana: 2,
+      hora_inicio: "09:00",
+      hora_fim: "10:00",
+      criada_em: AGORA,
+    },
+    {
+      id: "au-2",
+      tenant_id: TENANT,
+      turma_id: "t-1",
       dia_semana: 4,
+      hora_inicio: "09:00",
+      hora_fim: "10:00",
+      criada_em: AGORA,
+    },
+    {
+      id: "au-3",
+      tenant_id: TENANT,
+      turma_id: "t-2",
+      dia_semana: 3,
       hora_inicio: "10:00",
       hora_fim: "11:00",
-      capacidade: 6,
       criada_em: AGORA,
     },
   ];
@@ -165,20 +193,20 @@ export function criarSeed(): SeedData {
     },
   ];
 
-  const mensalidades: Mensalidade[] = [
+  const pagamentos: Pagamento[] = [
     {
-      id: "men-1",
+      id: "pg-1",
       tenant_id: TENANT,
       aluno_id: "a-1",
       competencia: "2026-07",
       valor_centavos: 32000,
       vencimento: "2026-07-10",
-      status: "paga",
+      status: "pago",
       pago_em: "2026-07-08T14:00:00.000Z",
-      criada_em: AGORA,
+      criado_em: AGORA,
     },
     {
-      id: "men-2",
+      id: "pg-2",
       tenant_id: TENANT,
       aluno_id: "a-2",
       competencia: "2026-07",
@@ -186,7 +214,22 @@ export function criarSeed(): SeedData {
       vencimento: "2026-07-10",
       status: "pendente",
       pago_em: null,
-      criada_em: AGORA,
+      criado_em: AGORA,
+    },
+  ];
+
+  const avaliacoes: Avaliacao[] = [
+    {
+      id: "av-1",
+      tenant_id: TENANT,
+      aluno_id: "a-1",
+      professor_id: "u-prof",
+      saque: 7,
+      forehand: 8,
+      backhand: 6,
+      observacoes: "Boa evolução no forehand; ajustar empunhadura no saque.",
+      avaliado_em: "2026-07-15",
+      criado_em: AGORA,
     },
   ];
 
@@ -231,8 +274,10 @@ export function criarSeed(): SeedData {
     responsaveis,
     alunos,
     turmas,
+    aulas,
     matriculas,
-    mensalidades,
+    pagamentos,
+    avaliacoes,
     consents,
     auditLogs,
   };

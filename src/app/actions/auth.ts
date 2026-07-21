@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { criarSessao, encerrarSessao } from "@/lib/auth/session";
-import { getRepository } from "@/lib/data";
+import { getRepository } from "@/lib/dal";
 import { logger } from "@/lib/logger";
 
 export async function loginAction(formData: FormData): Promise<void> {

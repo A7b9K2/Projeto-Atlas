@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { temPermissao, PERMISSOES_PADRAO } from "./permissions";
-import { PAPEIS } from "./types";
+import { PAPEIS } from ".";
 
 describe("permissões padrão (espelho da matriz do banco)", () => {
   it("proprietário tem acesso total", () => {

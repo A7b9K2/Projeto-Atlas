@@ -14,7 +14,8 @@ export function getRepository(): AtlasRepository {
   if (instancia) return instancia;
 
   const provider = process.env.DATA_PROVIDER ?? "mock";
-  instancia = provider === "supabase" ? new SupabaseRepository() : new MockRepository();
+  instancia =
+    provider === "supabase" ? new SupabaseRepository() : new MockRepository();
 
   logger.info("data.provider.selecionado", { provider: instancia.provider });
   return instancia;

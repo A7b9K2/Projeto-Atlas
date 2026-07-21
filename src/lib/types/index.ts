@@ -66,17 +66,25 @@ export interface Responsavel {
   criado_em: IsoDate;
 }
 
-/** Turma/aula na agenda. */
+/** Turma — agrupamento pedagógico recorrente (nível/faixa). */
 export interface Turma {
   id: Id;
   tenant_id: TenantId;
   nome: string;
   professor_id: UserId | null;
+  capacidade: number;
+  criada_em: IsoDate;
+}
+
+/** Aula — ocorrência agendada de uma turma na semana. */
+export interface Aula {
+  id: Id;
+  tenant_id: TenantId;
+  turma_id: Id;
   /** 0 = domingo … 6 = sábado. */
   dia_semana: number;
   hora_inicio: string; // "HH:MM"
   hora_fim: string; // "HH:MM"
-  capacidade: number;
   criada_em: IsoDate;
 }
 
@@ -89,18 +97,34 @@ export interface Matricula {
   criada_em: IsoDate;
 }
 
-export type StatusMensalidade = "pendente" | "paga" | "vencida" | "cancelada";
+export type StatusPagamento = "pendente" | "pago" | "vencido" | "cancelado";
 
-export interface Mensalidade {
+/** Pagamento / mensalidade de um aluno. */
+export interface Pagamento {
   id: Id;
   tenant_id: TenantId;
   aluno_id: Id;
   competencia: string; // "YYYY-MM"
   valor_centavos: number;
   vencimento: IsoDate;
-  status: StatusMensalidade;
+  status: StatusPagamento;
   pago_em: IsoDate | null;
-  criada_em: IsoDate;
+  criado_em: IsoDate;
+}
+
+/** Avaliação pedagógica simples de um aluno (módulo pedagógico). */
+export interface Avaliacao {
+  id: Id;
+  tenant_id: TenantId;
+  aluno_id: Id;
+  professor_id: UserId;
+  /** Nota 0–10 por competência técnica avaliada. */
+  saque: number;
+  forehand: number;
+  backhand: number;
+  observacoes: string | null;
+  avaliado_em: IsoDate;
+  criado_em: IsoDate;
 }
 
 /** Consentimento LGPD (parental para menores). */
