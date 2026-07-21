@@ -1,32 +1,57 @@
 /**
- * Sessão do preview via cookie httpOnly.
- * DÍVIDA TÉCNICA CONSCIENTE: no MVP a "sessão" guarda apenas o e-mail e a
- * resolução de tenant_id/papel acontece no servidor a cada request via DAL.
- * Na Fase 1 (Supabase Auth) isto vira JWT com tenant_id + papel embutidos,
- * e o middleware passa a validar o token — não o cookie mock.
+ * Fachada de sessão — delega ao AuthProvider selecionado por env.
+ * Mantém a API usada por server actions, layouts e páginas estável,
+ * independente de mock ou Supabase.
  */
-import { cookies } from "next/headers";
-import { getRepository } from "@/lib/dal";
+import { redirect } from "next/navigation";
+import { getAuthProvider, type Credenciais } from "@/lib/auth";
+import { permissoesDoPapel } from "@/lib/auth/authorization";
+import type { ContextoAuth } from "@/lib/auth/provider";
 import type { SessaoAtual } from "@/lib/types";
+import { temPermissao, type Permissao } from "@/lib/types/permissions";
 
-const COOKIE = "atlas_session";
-
-export async function criarSessao(email: string): Promise<void> {
-  cookies().set(COOKIE, email, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
-}
-
-export async function encerrarSessao(): Promise<void> {
-  cookies().delete(COOKIE);
-}
-
-/** Resolve a sessão atual pelo cookie. Null se não autenticado. */
 export async function getSessao(): Promise<SessaoAtual | null> {
-  const email = cookies().get(COOKIE)?.value;
-  if (!email) return null;
-  return getRepository().autenticar(email);
+  return getAuthProvider().getSessao();
+}
+
+export async function login(
+  credenciais: Credenciais,
+): Promise<SessaoAtual | null> {
+  return getAuthProvider().login(credenciais);
+}
+
+export async function logout(): Promise<void> {
+  return getAuthProvider().logout();
+}
+
+/** Contexto de autorização (claims): tenant_id + papel + permissões. */
+export async function getContextoAuth(): Promise<ContextoAuth | null> {
+  const sessao = await getSessao();
+  if (!sessao) return null;
+  return {
+    tenant_id: sessao.academia.id,
+    papel: sessao.usuario.papel,
+    permissoes: permissoesDoPapel(sessao.usuario.papel),
+  };
+}
+
+/** Exige sessão; redireciona para /login se ausente. */
+export async function exigirSessao(): Promise<SessaoAtual> {
+  const sessao = await getSessao();
+  if (!sessao) redirect("/login");
+  return sessao;
+}
+
+/**
+ * Exige sessão + permissão. Segunda barreira (defesa em profundidade) ao RLS.
+ * Redireciona para /dashboard se o papel não tiver a permissão.
+ */
+export async function exigirPermissao(
+  permissao: Permissao,
+): Promise<SessaoAtual> {
+  const sessao = await exigirSessao();
+  if (!temPermissao(sessao.usuario.papel, permissao)) {
+    redirect("/dashboard?erro=permissao");
+  }
+  return sessao;
 }

@@ -1,7 +1,6 @@
-import { getSessao } from "@/lib/auth/session";
+import { exigirSessao } from "@/lib/auth/session";
 import { getRepository } from "@/lib/dal";
 import { StatCard } from "@/components/StatCard";
-import { redirect } from "next/navigation";
 
 function formatarBRL(centavos: number): string {
   return (centavos / 100).toLocaleString("pt-BR", {
@@ -10,10 +9,12 @@ function formatarBRL(centavos: number): string {
   });
 }
 
-export default async function DashboardPage() {
-  const sessao = await getSessao();
-  if (!sessao) redirect("/login");
-
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { erro?: string };
+}) {
+  const sessao = await exigirSessao();
   const tenant = sessao.academia.id;
   const repo = getRepository();
 
@@ -40,10 +41,17 @@ export default async function DashboardPage() {
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Visão geral</h1>
         <p className="text-sm text-slate-500">
-          {sessao.academia.nome_fantasia} · dados semente (provider:{" "}
-          {repo.provider})
+          {sessao.academia.nome_fantasia} · {sessao.usuario.papel} · dados semente
+          (provider: {repo.provider})
         </p>
       </header>
+
+      {searchParams.erro === "permissao" && (
+        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          🔒 Seu papel ({sessao.usuario.papel}) não tem permissão para acessar
+          aquela área. Acesso bloqueado pelo middleware e pelo RLS.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard titulo="Alunos ativos" valor={alunos.length} icone="🎾" />
@@ -74,14 +82,13 @@ export default async function DashboardPage() {
 
       <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="mb-1 text-lg font-semibold text-slate-900">
-          Fase 0 concluída ✅
+          Fase 1 concluída ✅
         </h2>
         <p className="text-sm text-slate-500">
-          Fundação no ar: scaffold Next.js + TS estrito, Tailwind, DAL
-          (mock↔Supabase por env), tipos de domínio, integrações stub
-          (pagamentos/comunicação/IA com guardrails), logger estruturado,
-          migrations SQL versionadas e este shell autenticado por papel. Próxima
-          fase: Auth + multi-tenant sobre Supabase.
+          Auth abstraído (mock ↔ Supabase por env), sessão com contexto de
+          tenant/papel/permissões, middleware protegendo rotas com controle por
+          papel, e RLS role-aware versionado (migrations 0003 + testes SQL). O
+          preview segue no mock, sem chaves. Navegue pelo menu conforme seu papel.
         </p>
       </div>
     </div>

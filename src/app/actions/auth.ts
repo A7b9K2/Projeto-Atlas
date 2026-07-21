@@ -1,21 +1,20 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { criarSessao, encerrarSessao } from "@/lib/auth/session";
-import { getRepository } from "@/lib/dal";
+import { login, logout } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
 
 export async function loginAction(formData: FormData): Promise<void> {
   const email = String(formData.get("email") ?? "").trim();
+  const senha = String(formData.get("senha") ?? "") || undefined;
   if (!email) redirect("/login?erro=email");
 
-  const sessao = await getRepository().autenticar(email);
+  const sessao = await login({ email, senha });
   if (!sessao) {
     logger.warn("auth.login.falha", { email });
     redirect("/login?erro=credenciais");
   }
 
-  await criarSessao(email);
   logger.info("auth.login.sucesso", {
     email,
     tenant_id: sessao.academia.id,
@@ -25,6 +24,6 @@ export async function loginAction(formData: FormData): Promise<void> {
 }
 
 export async function logoutAction(): Promise<void> {
-  await encerrarSessao();
+  await logout();
   redirect("/login");
 }

@@ -12,6 +12,7 @@ import type {
   Consent,
   Matricula,
   Pagamento,
+  Papel,
   Responsavel,
   Turma,
   Usuario,
@@ -19,6 +20,22 @@ import type {
 
 const TENANT = "acad-demo-0001";
 const AGORA = "2026-07-21T12:00:00.000Z";
+
+/**
+ * Mapa e-mail → papel para resolução edge-safe (usado pelo middleware no
+ * modo mock). Pura, sem I/O. No modo Supabase o papel vem dos claims do JWT.
+ */
+export const EMAIL_PAPEL_SEED: Readonly<Record<string, Papel>> = {
+  "proprietario@atlas.demo": "proprietario",
+  "gestor@atlas.demo": "gestor",
+  "professor@atlas.demo": "professor",
+  "responsavel@atlas.demo": "responsavel",
+  "aluno@atlas.demo": "aluno",
+};
+
+export function papelPorEmailSeed(email: string): Papel | null {
+  return EMAIL_PAPEL_SEED[email.toLowerCase()] ?? null;
+}
 
 export interface SeedData {
   academias: Academia[];
