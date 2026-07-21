@@ -13,6 +13,7 @@ interface ItemNav {
 const NAV: ItemNav[] = [
   { href: "/dashboard", label: "Visão geral", icone: "🏠" },
   { href: "/dashboard/usuarios", label: "Usuários", icone: "👥", requer: "usuarios:gerir" },
+  { href: "/dashboard/permissoes", label: "Permissões", icone: "🛡️", requer: "academia:gerir" },
   { href: "/dashboard/alunos", label: "Alunos", icone: "🎾", requer: "alunos:ler" },
   { href: "/dashboard/agenda", label: "Agenda", icone: "📅", requer: "agenda:ler" },
   { href: "/dashboard/financeiro", label: "Financeiro", icone: "💰", requer: "financeiro:ler" },

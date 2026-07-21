@@ -145,6 +145,18 @@ export interface Consent {
   criado_em: IsoDate;
 }
 
+/**
+ * Override de permissão por papel dentro de um tenant (tabela papel_permissoes).
+ * Ausência de override → herda de permissoes_padrao. `permissao` é o slug
+ * (ex.: "financeiro:gerir"); tipado como string para casar com a coluna text.
+ */
+export interface PapelPermissao {
+  tenant_id: TenantId;
+  papel: Papel;
+  permissao: string;
+  concedida: boolean;
+}
+
 /** Trilha de auditoria LGPD — imutável. */
 export interface AuditLog {
   id: Id;

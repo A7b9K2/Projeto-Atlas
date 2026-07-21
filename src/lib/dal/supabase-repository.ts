@@ -19,6 +19,7 @@ import type {
   Consent,
   Matricula,
   Pagamento,
+  PapelPermissao,
   Responsavel,
   SessaoAtual,
   Turma,
@@ -110,6 +111,27 @@ export class SupabaseRepository implements AtlasRepository {
     throw new Error(NAO_IMPLEMENTADO);
   }
   listarAuditLogs(): Promise<AuditLog[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  listarPapelPermissoes(): Promise<PapelPermissao[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+
+  // Gestão de usuários: no Supabase, convite usa Auth Admin API + insert em
+  // public.usuarios; mutações passam pelo RLS (proprietario/gestor). Preparado.
+  convidarUsuario(): Promise<Usuario> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  alterarPapelUsuario(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  definirAtivoUsuario(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  removerUsuario(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  definirPapelPermissao(): Promise<void> {
     throw new Error(NAO_IMPLEMENTADO);
   }
 }

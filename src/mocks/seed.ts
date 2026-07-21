@@ -13,10 +13,12 @@ import type {
   Matricula,
   Pagamento,
   Papel,
+  PapelPermissao,
   Responsavel,
   Turma,
   Usuario,
 } from "@/lib/types";
+import { PERMISSOES_PADRAO } from "@/lib/types/permissions";
 
 const TENANT = "acad-demo-0001";
 const AGORA = "2026-07-21T12:00:00.000Z";
@@ -40,6 +42,7 @@ export function papelPorEmailSeed(email: string): Papel | null {
 export interface SeedData {
   academias: Academia[];
   usuarios: Usuario[];
+  papelPermissoes: PapelPermissao[];
   responsaveis: Responsavel[];
   alunos: Aluno[];
   turmas: Turma[];
@@ -106,7 +109,37 @@ export function criarSeed(): SeedData {
       ativo: true,
       criado_em: AGORA,
     },
+    {
+      id: "u-prof2",
+      tenant_id: TENANT,
+      nome: "Priscila Professora",
+      email: "priscila@atlas.demo",
+      papel: "professor",
+      ativo: true,
+      criado_em: AGORA,
+    },
+    {
+      id: "u-gestor2",
+      tenant_id: TENANT,
+      nome: "Gabriel Gestor",
+      email: "gabriel@atlas.demo",
+      papel: "gestor",
+      ativo: false,
+      criado_em: AGORA,
+    },
   ];
+
+  // Matriz de permissões do tenant (overrides). Inicia igual ao padrão.
+  const papelPermissoes: PapelPermissao[] = (
+    Object.keys(PERMISSOES_PADRAO) as Papel[]
+  ).flatMap((papel) =>
+    PERMISSOES_PADRAO[papel].map((permissao) => ({
+      tenant_id: TENANT,
+      papel,
+      permissao,
+      concedida: true,
+    })),
+  );
 
   const responsaveis: Responsavel[] = [
     {
@@ -288,6 +321,7 @@ export function criarSeed(): SeedData {
   return {
     academias,
     usuarios,
+    papelPermissoes,
     responsaveis,
     alunos,
     turmas,

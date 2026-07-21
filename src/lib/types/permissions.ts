@@ -49,3 +49,42 @@ export const PERMISSOES_PADRAO: Record<Papel, readonly Permissao[]> = {
 export function temPermissao(papel: Papel, permissao: Permissao): boolean {
   return PERMISSOES_PADRAO[papel].includes(permissao);
 }
+
+/** Todas as permissões conhecidas (para renderizar a matriz). */
+export const TODAS_PERMISSOES: readonly Permissao[] = [
+  "academia:gerir",
+  "usuarios:gerir",
+  "alunos:ler",
+  "alunos:gerir",
+  "agenda:ler",
+  "agenda:gerir",
+  "financeiro:ler",
+  "financeiro:gerir",
+  "pedagogico:ler",
+  "pedagogico:gerir",
+];
+
+/** Override de permissão por papel (espelha uma linha de papel_permissoes). */
+export interface OverridePermissao {
+  papel: Papel;
+  permissao: string;
+  concedida: boolean;
+}
+
+/**
+ * Permissões efetivas = padrão do papel + overrides do tenant.
+ * Um override `concedida=false` revoga; `concedida=true` adiciona.
+ */
+export function permissoesEfetivas(
+  papel: Papel,
+  overrides: readonly OverridePermissao[],
+): Set<Permissao> {
+  const efetivas = new Set<Permissao>(PERMISSOES_PADRAO[papel]);
+  for (const o of overrides) {
+    if (o.papel !== papel) continue;
+    const p = o.permissao as Permissao;
+    if (o.concedida) efetivas.add(p);
+    else efetivas.delete(p);
+  }
+  return efetivas;
+}

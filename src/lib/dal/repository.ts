@@ -13,12 +13,22 @@ import type {
   Consent,
   Matricula,
   Pagamento,
+  Papel,
+  PapelPermissao,
   Responsavel,
   SessaoAtual,
   TenantId,
   Turma,
+  UserId,
   Usuario,
 } from "@/lib/types";
+
+/** Dados para convidar um novo usuário. */
+export interface ConviteUsuario {
+  nome: string;
+  email: string;
+  papel: Papel;
+}
 
 export interface AtlasRepository {
   readonly provider: string;
@@ -47,4 +57,37 @@ export interface AtlasRepository {
   listarAvaliacoes(tenant_id: TenantId): Promise<Avaliacao[]>;
   listarConsents(tenant_id: TenantId): Promise<Consent[]>;
   listarAuditLogs(tenant_id: TenantId): Promise<AuditLog[]>;
+  listarPapelPermissoes(tenant_id: TenantId): Promise<PapelPermissao[]>;
+
+  // ---- Mutações de gestão de usuários (registram auditoria) ----
+  // `ator_id` é quem executa a ação (para a trilha de auditoria).
+  convidarUsuario(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    convite: ConviteUsuario,
+  ): Promise<Usuario>;
+  alterarPapelUsuario(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    usuario_id: UserId,
+    papel: Papel,
+  ): Promise<void>;
+  definirAtivoUsuario(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    usuario_id: UserId,
+    ativo: boolean,
+  ): Promise<void>;
+  removerUsuario(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    usuario_id: UserId,
+  ): Promise<void>;
+  definirPapelPermissao(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    papel: Papel,
+    permissao: string,
+    concedida: boolean,
+  ): Promise<void>;
 }
