@@ -60,6 +60,14 @@ export interface ContratoInput {
   dia_vencimento: number;
   inicio: string;
 }
+export interface AvaliacaoInput {
+  aluno_id: Id;
+  saque: number;
+  forehand: number;
+  backhand: number;
+  observacoes?: string | null;
+  avaliado_em?: string;
+}
 
 /** Dados para convidar um novo usuário. */
 export interface ConviteUsuario {
@@ -114,6 +122,8 @@ export interface AtlasRepository {
   listarMatriculas(tenant_id: TenantId): Promise<Matricula[]>;
   listarPagamentos(tenant_id: TenantId): Promise<Pagamento[]>;
   listarAvaliacoes(tenant_id: TenantId): Promise<Avaliacao[]>;
+  listarAvaliacoesDoAluno(tenant_id: TenantId, aluno_id: Id): Promise<Avaliacao[]>;
+  criarAvaliacao(tenant_id: TenantId, ator_id: UserId, input: AvaliacaoInput): Promise<Avaliacao>;
   listarConsents(tenant_id: TenantId): Promise<Consent[]>;
   listarAuditLogs(tenant_id: TenantId): Promise<AuditLog[]>;
   listarPapelPermissoes(tenant_id: TenantId): Promise<PapelPermissao[]>;

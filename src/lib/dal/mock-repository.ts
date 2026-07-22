@@ -7,6 +7,7 @@ import type {
   AtlasRepository,
   AlunoInput,
   AulaInput,
+  AvaliacaoInput,
   ConsentimentoInput,
   ContratoInput,
   ConviteUsuario,
@@ -161,7 +162,41 @@ export class MockRepository implements AtlasRepository {
   }
 
   async listarAvaliacoes(tenant_id: TenantId): Promise<Avaliacao[]> {
-    return this.porTenant(this.db.avaliacoes, tenant_id);
+    return this.porTenant(this.db.avaliacoes, tenant_id)
+      .slice()
+      .sort((a, b) => (a.avaliado_em < b.avaliado_em ? 1 : -1));
+  }
+
+  async listarAvaliacoesDoAluno(
+    tenant_id: TenantId,
+    aluno_id: Id,
+  ): Promise<Avaliacao[]> {
+    return this.porTenant(this.db.avaliacoes, tenant_id)
+      .filter((a) => a.aluno_id === aluno_id)
+      .sort((a, b) => (a.avaliado_em < b.avaliado_em ? 1 : -1));
+  }
+
+  async criarAvaliacao(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    input: AvaliacaoInput,
+  ): Promise<Avaliacao> {
+    const clamp = (n: number) => Math.max(0, Math.min(10, Math.round(n)));
+    const avaliacao: Avaliacao = {
+      id: `av-${agoraMs()}`,
+      tenant_id,
+      aluno_id: input.aluno_id,
+      professor_id: ator_id,
+      saque: clamp(input.saque),
+      forehand: clamp(input.forehand),
+      backhand: clamp(input.backhand),
+      observacoes: input.observacoes ?? null,
+      avaliado_em: input.avaliado_em ?? new Date().toISOString().slice(0, 10),
+      criado_em: agoraIso(),
+    };
+    this.db.avaliacoes.push(avaliacao);
+    this.auditar(tenant_id, ator_id, "avaliacao.criada", "avaliacao", avaliacao.id);
+    return avaliacao;
   }
 
   async listarConsents(tenant_id: TenantId): Promise<Consent[]> {

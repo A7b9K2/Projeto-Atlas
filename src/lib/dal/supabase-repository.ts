@@ -111,6 +111,12 @@ export class SupabaseRepository implements AtlasRepository {
   listarAvaliacoes(): Promise<Avaliacao[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
+  listarAvaliacoesDoAluno(): Promise<Avaliacao[]> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
+  criarAvaliacao(): Promise<Avaliacao> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
   listarConsents(): Promise<Consent[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
