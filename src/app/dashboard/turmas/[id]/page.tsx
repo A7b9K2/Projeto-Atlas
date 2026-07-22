@@ -11,8 +11,7 @@ import { temPermissao } from "@/lib/types/permissions";
 import { criarAulaAction, removerAulaAction } from "@/app/actions/aulas";
 import { matricularAction, desmatricularAction, removerTurmaAction } from "@/app/actions/turmas";
 import { iniciarChamadaAction } from "@/app/actions/presenca";
-
-const HOJE = "2026-07-21";
+import { HOJE } from "@/lib/date";
 
 export default async function TurmaDetalhePage({
   params,

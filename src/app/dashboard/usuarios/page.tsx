@@ -78,7 +78,7 @@ export default async function UsuariosPage({
 
       {/* Busca e filtros */}
       <form method="get" className="flex flex-wrap gap-2">
-        <input name="q" defaultValue={searchParams.q ?? ""} placeholder="Buscar nome/e-mail" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="q" aria-label="Buscar usuário por nome ou e-mail" defaultValue={searchParams.q ?? ""} placeholder="Buscar nome/e-mail" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <select name="papel" defaultValue={fPapel} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="">Todos os papéis</option>
           {PAPEIS.map((p) => (

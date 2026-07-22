@@ -6,15 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { brl, statusEfetivo } from "@/lib/financeiro";
-import type { StatusPagamento } from "@/lib/types";
-
-const BADGE: Record<StatusPagamento, "sucesso" | "alerta" | "perigo" | "neutro"> = {
-  pago: "sucesso",
-  pendente: "alerta",
-  vencido: "perigo",
-  cancelado: "neutro",
-};
+import { brl, statusEfetivo, BADGE_STATUS_PAGAMENTO as BADGE } from "@/lib/financeiro";
 
 export default async function FinanceiroAlunoPage({
   params,

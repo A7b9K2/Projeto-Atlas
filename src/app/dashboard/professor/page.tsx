@@ -4,9 +4,8 @@ import { getRepository } from "@/lib/dal";
 import { PageHeader } from "@/components/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DIAS_SEMANA, diaDaData } from "@/lib/agenda";
+import { HOJE } from "@/lib/date";
 import { iniciarChamadaAction } from "@/app/actions/presenca";
-
-const HOJE = "2026-07-21";
 
 export default async function ProfessorPage() {
   const sessao = await exigirPermissao("pedagogico:gerir");

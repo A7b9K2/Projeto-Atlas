@@ -6,17 +6,9 @@ import { Alert } from "@/components/ui/Alert";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FinanceiroNav } from "@/components/FinanceiroNav";
-import { brl, statusEfetivo, competenciaDe, HOJE } from "@/lib/financeiro";
+import { brl, statusEfetivo, competenciaDe, HOJE, BADGE_STATUS_PAGAMENTO as BADGE } from "@/lib/financeiro";
 import { temPermissao } from "@/lib/types/permissions";
 import { gerarMensalidadesAction, emitirCobrancaAction, registrarPagamentoAction } from "@/app/actions/financeiro";
-import type { StatusPagamento } from "@/lib/types";
-
-const BADGE: Record<StatusPagamento, "sucesso" | "alerta" | "perigo" | "neutro"> = {
-  pago: "sucesso",
-  pendente: "alerta",
-  vencido: "perigo",
-  cancelado: "neutro",
-};
 
 export default async function MensalidadesPage({
   searchParams,
@@ -52,7 +44,7 @@ export default async function MensalidadesPage({
         <form method="get" className="flex flex-wrap items-end gap-2">
           <div>
             <label className="mb-1 block text-xs text-slate-500">Competência</label>
-            <input name="competencia" defaultValue={competencia} placeholder="2026-07" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input name="competencia" aria-label="Competência (AAAA-MM)" defaultValue={competencia} placeholder="2026-07" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           </div>
           <select name="status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
             <option value="">Todos os status</option>

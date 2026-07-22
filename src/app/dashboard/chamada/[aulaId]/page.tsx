@@ -5,10 +5,9 @@ import { getRepository } from "@/lib/dal";
 import { Avatar } from "@/components/ui/Avatar";
 import { Alert } from "@/components/ui/Alert";
 import { DIAS_SEMANA } from "@/lib/agenda";
+import { HOJE } from "@/lib/date";
 import type { StatusPresenca } from "@/lib/types";
 import { registrarPresencaAction, salvarObsAulaAction } from "@/app/actions/presenca";
-
-const HOJE = "2026-07-21";
 
 const OPCOES: { status: StatusPresenca; label: string; cor: string }[] = [
   { status: "presente", label: "Presente", cor: "bg-court-600 text-white" },

@@ -1,13 +1,7 @@
 import { exigirSessao } from "@/lib/auth/session";
 import { getRepository } from "@/lib/dal";
 import { StatCard } from "@/components/StatCard";
-
-function formatarBRL(centavos: number): string {
-  return (centavos / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
+import { brl as formatarBRL } from "@/lib/financeiro";
 
 export default async function DashboardPage({
   searchParams,

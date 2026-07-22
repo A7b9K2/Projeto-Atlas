@@ -1,7 +1,19 @@
 import type { Pagamento, StatusPagamento } from "@/lib/types";
+import { HOJE } from "@/lib/date";
 
-/** Data de referência do app (mock/seed). */
-export const HOJE = "2026-07-21";
+// Reexporta para compatibilidade com imports existentes (@/lib/financeiro).
+export { HOJE };
+
+/** Mapa status de pagamento → variante do Badge (fonte única). */
+export const BADGE_STATUS_PAGAMENTO: Record<
+  StatusPagamento,
+  "sucesso" | "alerta" | "perigo" | "neutro"
+> = {
+  pago: "sucesso",
+  pendente: "alerta",
+  vencido: "perigo",
+  cancelado: "neutro",
+};
 
 export function brl(centavos: number): string {
   return (centavos / 100).toLocaleString("pt-BR", {

@@ -97,7 +97,7 @@ export default async function AlunosPage({
 
       {/* Filtros */}
       <form method="get" className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6">
-        <input name="q" defaultValue={searchParams.q ?? ""} placeholder="Buscar por nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm lg:col-span-2" />
+        <input name="q" aria-label="Buscar aluno por nome" defaultValue={searchParams.q ?? ""} placeholder="Buscar por nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm lg:col-span-2" />
         <select name="status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="ativos">Ativos</option>
           <option value="arquivados">Arquivados</option>

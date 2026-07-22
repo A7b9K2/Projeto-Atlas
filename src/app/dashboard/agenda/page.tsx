@@ -4,9 +4,8 @@ import { getRepository } from "@/lib/dal";
 import { PageHeader } from "@/components/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DIAS_SEMANA, DIAS_CURTO, gradeDoMes, ymd } from "@/lib/agenda";
+import { HOJE } from "@/lib/date";
 import type { Aula } from "@/lib/types";
-
-const HOJE = "2026-07-21";
 
 function addDias(iso: string, n: number): string {
   const d = new Date(`${iso}T00:00:00`);
