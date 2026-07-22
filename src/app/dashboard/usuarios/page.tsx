@@ -63,9 +63,9 @@ export default async function UsuariosPage({
       <section className="rounded-2xl border border-slate-200 bg-white p-5">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Convidar usuário</h2>
         <form action={convidarUsuarioAction} className="grid gap-3 sm:grid-cols-4">
-          <input name="nome" required placeholder="Nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <input name="email" type="email" required placeholder="E-mail" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <select name="papel" defaultValue="professor" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <input name="nome" required aria-label="Nome do convidado" placeholder="Nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input name="email" type="email" required aria-label="E-mail do convidado" placeholder="E-mail" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <select name="papel" aria-label="Papel do convidado" defaultValue="professor" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
             {PAPEIS.map((p) => (
               <option key={p} value={p}>{p}</option>
             ))}
@@ -79,13 +79,13 @@ export default async function UsuariosPage({
       {/* Busca e filtros */}
       <form method="get" className="flex flex-wrap gap-2">
         <input name="q" aria-label="Buscar usuário por nome ou e-mail" defaultValue={searchParams.q ?? ""} placeholder="Buscar nome/e-mail" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <select name="papel" defaultValue={fPapel} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <select name="papel" aria-label="Filtrar por papel" defaultValue={fPapel} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="">Todos os papéis</option>
           {PAPEIS.map((p) => (
             <option key={p} value={p}>{p}</option>
           ))}
         </select>
-        <select name="status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <select name="status" aria-label="Filtrar por status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="">Todos</option>
           <option value="ativo">Ativos</option>
           <option value="inativo">Inativos</option>
@@ -120,7 +120,7 @@ export default async function UsuariosPage({
                   <td className="px-4 py-3">
                     <form action={alterarPapelAction} className="flex items-center gap-1">
                       <input type="hidden" name="usuario_id" value={u.id} />
-                      <select name="papel" defaultValue={u.papel} disabled={ehEu} className="rounded border border-slate-200 px-2 py-1 text-xs capitalize disabled:opacity-50">
+                      <select name="papel" aria-label="Alterar papel do usuario" defaultValue={u.papel} disabled={ehEu} className="rounded border border-slate-200 px-2 py-1 text-xs capitalize disabled:opacity-50">
                         {PAPEIS.map((p) => (
                           <option key={p} value={p}>{p}</option>
                         ))}

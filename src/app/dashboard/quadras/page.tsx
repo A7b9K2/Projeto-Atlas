@@ -34,8 +34,8 @@ export default async function QuadrasPage({
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Nova quadra</h2>
         <form action={criarQuadraAction} className="grid gap-3 sm:grid-cols-3">
-          <input name="nome" required placeholder="Nome (ex.: Quadra 1)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <select name="tipo" defaultValue="saibro" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <input name="nome" required aria-label="Nome da quadra" placeholder="Nome (ex.: Quadra 1)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <select name="tipo" aria-label="Tipo de quadra" defaultValue="saibro" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
             {Object.entries(TIPO_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
           <button className="rounded-lg bg-atlas-600 px-4 py-2 text-sm font-semibold text-white hover:bg-atlas-700">Criar quadra</button>

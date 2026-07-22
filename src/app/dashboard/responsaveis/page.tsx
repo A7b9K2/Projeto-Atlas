@@ -32,9 +32,9 @@ export default async function ResponsaveisPage({
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Cadastrar responsável</h2>
         <form action={criarResponsavelAction} className="grid gap-3 sm:grid-cols-4">
           <input type="hidden" name="proximo" value={searchParams.proximo ?? "/dashboard/responsaveis"} />
-          <input name="nome" required placeholder="Nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <input name="email" type="email" required placeholder="E-mail" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <input name="telefone" placeholder="Telefone" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input name="nome" required aria-label="Nome do responsavel" placeholder="Nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input name="email" type="email" required aria-label="E-mail do responsavel" placeholder="E-mail" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input name="telefone" aria-label="Telefone do responsavel" placeholder="Telefone" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           <button type="submit" className="rounded-lg bg-atlas-600 px-4 py-2 text-sm font-semibold text-white hover:bg-atlas-700">Cadastrar</button>
         </form>
       </section>

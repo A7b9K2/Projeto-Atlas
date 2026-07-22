@@ -98,7 +98,7 @@ export default async function TurmaDetalhePage({
           {podeGerir && (
             <form action={criarAulaAction} className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 sm:grid-cols-4">
               <input type="hidden" name="turma_id" value={turma.id} />
-              <select name="dia_semana" className="col-span-2 rounded-lg border border-slate-300 px-2 py-1.5 text-sm sm:col-span-2">
+              <select name="dia_semana" aria-label="Dia da semana" className="col-span-2 rounded-lg border border-slate-300 px-2 py-1.5 text-sm sm:col-span-2">
                 {DIAS_SEMANA.map((d, i) => <option key={d} value={i}>{d}</option>)}
               </select>
               <input name="hora_inicio" type="time" required defaultValue="09:00" className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
@@ -136,7 +136,7 @@ export default async function TurmaDetalhePage({
           {podeGerir && (
             <form action={matricularAction} className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
               <input type="hidden" name="turma_id" value={turma.id} />
-              <select name="aluno_id" required className="flex-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" disabled={vagas <= 0 || alunosDisponiveis.length === 0}>
+              <select name="aluno_id" required aria-label="Aluno para matricular" className="flex-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" disabled={vagas <= 0 || alunosDisponiveis.length === 0}>
                 {alunosDisponiveis.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
               </select>
               <button disabled={vagas <= 0 || alunosDisponiveis.length === 0} className="rounded-lg bg-court-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-court-500 disabled:opacity-40">

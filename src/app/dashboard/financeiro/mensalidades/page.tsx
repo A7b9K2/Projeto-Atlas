@@ -46,7 +46,7 @@ export default async function MensalidadesPage({
             <label className="mb-1 block text-xs text-slate-500">Competência</label>
             <input name="competencia" aria-label="Competência (AAAA-MM)" defaultValue={competencia} placeholder="2026-07" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           </div>
-          <select name="status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <select name="status" aria-label="Filtrar por status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
             <option value="">Todos os status</option>
             <option value="pendente">Pendente</option>
             <option value="pago">Pago</option>
@@ -99,7 +99,7 @@ export default async function MensalidadesPage({
                             <form action={emitirCobrancaAction} className="flex items-center gap-1">
                               <input type="hidden" name="pagamento_id" value={p.id} />
                               <input type="hidden" name="competencia" value={competencia} />
-                              <select name="metodo" defaultValue="pix" className="rounded border border-slate-200 px-1 py-1 text-xs">
+                              <select name="metodo" aria-label="Metodo de cobranca" defaultValue="pix" className="rounded border border-slate-200 px-1 py-1 text-xs">
                                 <option value="pix">Pix</option>
                                 <option value="boleto">Boleto</option>
                                 <option value="cartao">Cartão</option>

@@ -98,17 +98,17 @@ export default async function AlunosPage({
       {/* Filtros */}
       <form method="get" className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6">
         <input name="q" aria-label="Buscar aluno por nome" defaultValue={searchParams.q ?? ""} placeholder="Buscar por nome" className="rounded-lg border border-slate-300 px-3 py-2 text-sm lg:col-span-2" />
-        <select name="status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <select name="status" aria-label="Filtrar por status" defaultValue={fStatus} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="ativos">Ativos</option>
           <option value="arquivados">Arquivados</option>
           <option value="todos">Todos</option>
         </select>
-        <select name="faixa" defaultValue={fFaixa} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <select name="faixa" aria-label="Filtrar por faixa etaria" defaultValue={fFaixa} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="">Todas as idades</option>
           <option value="menor">Menores</option>
           <option value="maior">Maiores</option>
         </select>
-        <select name="ordenar" defaultValue={ordenar} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <select name="ordenar" aria-label="Ordenar" defaultValue={ordenar} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="nome">Ordenar: nome</option>
           <option value="recente">Mais recentes</option>
           <option value="idade">Idade</option>

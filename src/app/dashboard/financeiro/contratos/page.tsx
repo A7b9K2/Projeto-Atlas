@@ -36,14 +36,14 @@ export default async function ContratosPage({
         <section className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="mb-3 text-sm font-semibold text-slate-700">Novo contrato</h2>
           <form action={criarContratoAction} className="grid gap-3 sm:grid-cols-5">
-            <select name="aluno_id" required className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2">
+            <select name="aluno_id" required aria-label="Aluno do contrato" className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2">
               <option value="">Aluno…</option>
               {alunos.filter((a) => a.ativo).map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
-            <input name="descricao" required placeholder="Descrição (ex.: Mensal 2x)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2" />
-            <input name="valor" required type="number" step="0.01" placeholder="Valor (R$)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input name="dia_vencimento" type="number" min={1} max={28} defaultValue={10} placeholder="Dia venc." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input name="inicio" required defaultValue={competenciaDe(HOJE)} placeholder="Início (YYYY-MM)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input name="descricao" required aria-label="Descricao do contrato" placeholder="Descrição (ex.: Mensal 2x)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2" />
+            <input name="valor" required type="number" step="0.01" aria-label="Valor do contrato em reais" placeholder="Valor (R$)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input name="dia_vencimento" type="number" min={1} max={28} defaultValue={10} aria-label="Dia de vencimento" placeholder="Dia venc." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input name="inicio" required defaultValue={competenciaDe(HOJE)} aria-label="Competencia inicial" placeholder="Início (YYYY-MM)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             <button className="rounded-lg bg-atlas-600 px-4 py-2 text-sm font-semibold text-white hover:bg-atlas-700 sm:col-span-2">Criar contrato</button>
           </form>
         </section>
