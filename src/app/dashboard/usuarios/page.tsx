@@ -47,7 +47,7 @@ export default async function UsuariosPage({
     .slice(0, 6);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         titulo="Usuários"
         subtitulo={`${todos.length} usuário(s) · gerir equipe e papéis`}
@@ -96,8 +96,8 @@ export default async function UsuariosPage({
       </form>
 
       {/* Tabela */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <table className="w-full min-w-[640px] text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase text-slate-400">
             <tr>
               <th className="px-4 py-3">Nome</th>

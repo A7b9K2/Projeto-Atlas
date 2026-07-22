@@ -15,11 +15,11 @@ export default async function LgpdPage() {
     alunos.find((a) => a.id === id)?.nome ?? "—";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <PageHeader titulo="LGPD & Auditoria" subtitulo="Consentimentos e trilha de auditoria" />
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+          <table className="w-full min-w-[520px] text-sm">
             <thead className="bg-slate-50 text-left text-xs uppercase text-slate-400">
               <tr>
                 <th className="px-4 py-3">Aluno</th>
@@ -61,3 +61,5 @@ export default async function LgpdPage() {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
