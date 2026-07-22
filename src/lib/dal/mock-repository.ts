@@ -213,6 +213,21 @@ export class MockRepository implements AtlasRepository {
     return this.porTenant(this.db.papelPermissoes, tenant_id);
   }
 
+  async registrarComunicacao(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    canal: string,
+    destinatario: string,
+  ): Promise<void> {
+    this.auditar(
+      tenant_id,
+      ator_id,
+      "comunicacao.enviada",
+      "comunicacao",
+      `${canal}:${destinatario}`,
+    );
+  }
+
   private auditar(
     tenant_id: TenantId,
     ator_id: UserId,

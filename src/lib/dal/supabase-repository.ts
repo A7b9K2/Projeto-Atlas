@@ -123,6 +123,9 @@ export class SupabaseRepository implements AtlasRepository {
   listarAuditLogs(): Promise<AuditLog[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }
+  registrarComunicacao(): Promise<void> {
+    throw new Error(NAO_IMPLEMENTADO);
+  }
   listarPapelPermissoes(): Promise<PapelPermissao[]> {
     throw new Error(NAO_IMPLEMENTADO);
   }

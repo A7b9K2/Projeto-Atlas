@@ -126,6 +126,13 @@ export interface AtlasRepository {
   criarAvaliacao(tenant_id: TenantId, ator_id: UserId, input: AvaliacaoInput): Promise<Avaliacao>;
   listarConsents(tenant_id: TenantId): Promise<Consent[]>;
   listarAuditLogs(tenant_id: TenantId): Promise<AuditLog[]>;
+  /** Registra na auditoria o envio de uma comunicação (canal/destinatário). */
+  registrarComunicacao(
+    tenant_id: TenantId,
+    ator_id: UserId,
+    canal: string,
+    destinatario: string,
+  ): Promise<void>;
   listarPapelPermissoes(tenant_id: TenantId): Promise<PapelPermissao[]>;
 
   // ---- Mutações de gestão de usuários (registram auditoria) ----

@@ -27,6 +27,7 @@ const NAV: ItemNav[] = [
   { href: "/dashboard/quadras", label: "Quadras", icone: "🟩", requer: "agenda:gerir" },
   { href: "/dashboard/financeiro", label: "Financeiro", icone: "💰", requer: "financeiro:ler" },
   { href: "/dashboard/pedagogico", label: "Pedagógico", icone: "📈", requer: "pedagogico:ler" },
+  { href: "/dashboard/comunicacao", label: "Comunicação", icone: "📣", requer: "usuarios:gerir" },
   { href: "/dashboard/lgpd", label: "LGPD & Auditoria", icone: "🔒", requer: "academia:gerir" },
 ];
 
