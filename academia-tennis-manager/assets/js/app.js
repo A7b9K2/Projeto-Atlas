@@ -37,6 +37,61 @@
     }
   }
 
+  // --- Helpers de renderização --------------------------------------------
+
+  const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
+
+  function formatarMoeda(valor) {
+    return formatadorMoeda.format(Number(valor) || 0);
+  }
+
+  function formatarData(valor) {
+    if (!valor) return '—';
+    const d = new Date(String(valor).replace(' ', 'T'));
+    return Number.isNaN(d.getTime())
+      ? String(valor)
+      : d.toLocaleDateString('pt-BR');
+  }
+
+  /** Cria um elemento com classe e texto (seguro contra HTML injetado). */
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) {
+      node.textContent = text === null || text === undefined ? '—' : text;
+    }
+    return node;
+  }
+
+  /**
+   * Preenche um container [data-list] com itens. Se a lista estiver vazia,
+   * mantém a mensagem de "vazio" já presente no template.
+   */
+  function renderList(chave, itens, montarItem) {
+    const alvo = app.querySelector(`[data-list="${chave}"]`);
+    if (!alvo) return;
+    if (!Array.isArray(itens) || itens.length === 0) return;
+    alvo.replaceChildren(...itens.map(montarItem));
+  }
+
+  function renderShortcuts(atalhos) {
+    const alvo = app.querySelector('[data-list="atalhos"]');
+    if (!alvo || !Array.isArray(atalhos)) return;
+    alvo.replaceChildren(
+      ...atalhos.map((a) => {
+        const btn = el('button', 'shortcut', a.rotulo);
+        btn.type = 'button';
+        // Placeholder enquanto o módulo de destino não existe.
+        btn.disabled = !a.disponivel;
+        btn.title = a.disponivel ? a.rotulo : `${a.rotulo} (em breve)`;
+        return btn;
+      }),
+    );
+  }
+
   async function submit(form, btn, action) {
     btn.disabled = true;
     try {
@@ -115,12 +170,37 @@
 
     try {
       const dados = await window.API.dashboard();
+      const c = dados.cards;
       bindValues({
-        nome: dados.bemVindo,
-        alunosAtivos: dados.indicadores.alunosAtivos,
-        recebimentosMes: dados.indicadores.recebimentosMes,
-        checkinsHoje: dados.indicadores.checkinsHoje,
+        nome: dados.usuario ? dados.usuario.nome : '',
+        totalAlunos: c.totalAlunos,
+        professoresCadastrados: c.professoresCadastrados,
+        turmasAtivas: c.turmasAtivas,
+        aulasHoje: c.aulasHoje,
+        recebimentoMes: formatarMoeda(c.recebimentoMes),
+        alunosInadimplentes: c.alunosInadimplentes,
       });
+
+      renderList('proximasAulas', dados.proximasAulas, (aula) => {
+        const li = el('li', 'list__item');
+        li.append(
+          el('span', 'list__strong', aula.horario),
+          el('span', null, aula.professor),
+          el('span', 'muted', aula.turma),
+        );
+        return li;
+      });
+
+      renderList('ultimosAlunos', dados.ultimosAlunos, (aluno) => {
+        const li = el('li', 'list__item');
+        li.append(
+          el('span', 'list__strong', aluno.nome),
+          el('span', 'muted', formatarData(aluno.criadoEm)),
+        );
+        return li;
+      });
+
+      renderShortcuts(dados.atalhos);
     } catch (err) {
       // Sessao perdida entre navegacoes -> volta ao fluxo inicial.
       if (err.status === 401) boot();

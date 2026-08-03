@@ -110,25 +110,56 @@
           <h1>Dashboard</h1>
           <p class="muted">Bem-vindo(a), <strong data-bind="nome"></strong>.</p>
 
+          <!-- Cards de indicadores -->
           <div class="grid">
             <article class="stat">
-              <span class="stat__label">Alunos ativos</span>
-              <span class="stat__value" data-bind="alunosAtivos">—</span>
+              <span class="stat__label">Total de alunos</span>
+              <span class="stat__value" data-bind="totalAlunos">—</span>
             </article>
             <article class="stat">
-              <span class="stat__label">Recebimentos do mes</span>
-              <span class="stat__value" data-bind="recebimentosMes">—</span>
+              <span class="stat__label">Professores cadastrados</span>
+              <span class="stat__value" data-bind="professoresCadastrados">—</span>
             </article>
             <article class="stat">
-              <span class="stat__label">Check-ins hoje</span>
-              <span class="stat__value" data-bind="checkinsHoje">—</span>
+              <span class="stat__label">Turmas ativas</span>
+              <span class="stat__value" data-bind="turmasAtivas">—</span>
+            </article>
+            <article class="stat">
+              <span class="stat__label">Aulas realizadas hoje</span>
+              <span class="stat__value" data-bind="aulasHoje">—</span>
+            </article>
+            <article class="stat">
+              <span class="stat__label">Recebimento do mês</span>
+              <span class="stat__value" data-bind="recebimentoMes">—</span>
+            </article>
+            <article class="stat stat--alerta">
+              <span class="stat__label">Alunos inadimplentes</span>
+              <span class="stat__value" data-bind="alunosInadimplentes">—</span>
             </article>
           </div>
 
-          <p class="muted small">
-            Modulo 01 (Autenticacao) concluido. Os indicadores serao
-            preenchidos pelos proximos modulos.
-          </p>
+          <!-- Seções em duas colunas -->
+          <div class="panels">
+            <section class="panel">
+              <h2>Próximas aulas</h2>
+              <ul class="list" data-list="proximasAulas">
+                <li class="list__empty">Nenhuma aula agendada.</li>
+              </ul>
+            </section>
+
+            <section class="panel">
+              <h2>Últimos alunos cadastrados</h2>
+              <ul class="list" data-list="ultimosAlunos">
+                <li class="list__empty">Nenhum aluno cadastrado ainda.</li>
+              </ul>
+            </section>
+          </div>
+
+          <!-- Atalhos rápidos -->
+          <section class="panel">
+            <h2>Atalhos rápidos</h2>
+            <div class="shortcuts" data-list="atalhos"></div>
+          </section>
         </main>
       </div>
     </template>

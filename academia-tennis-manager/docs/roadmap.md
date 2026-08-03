@@ -6,7 +6,7 @@ arquitetura existente e reutiliza os componentes de `shared/`.
 | #  | Módulo               | Status        |
 | -- | -------------------- | ------------- |
 | 01 | Autenticação         | ✅ Concluído  |
-| 02 | Dashboard            | 🟡 Base criada (protegida) |
+| 02 | Dashboard            | ✅ Concluído  |
 | 03 | Alunos               | ⬜ Pendente   |
 | 04 | Professores          | ⬜ Pendente   |
 | 05 | Planos               | ⬜ Pendente   |
@@ -28,8 +28,18 @@ arquitetura existente e reutiliza os componentes de `shared/`.
 - Recuperação de sessão ao recarregar a página.
 - Estrutura preparada para "Esqueci minha senha" (sem envio de e-mail).
 
+## Módulo 02 — Dashboard (entregue)
+
+- Primeira tela após o login, limpa e responsiva.
+- Cards: total de alunos, professores cadastrados, turmas ativas, aulas
+  realizadas hoje, recebimento do mês e alunos inadimplentes.
+- Seções: próximas aulas, últimos alunos cadastrados e atalhos rápidos.
+- Dados reais quando as tabelas já existirem; valores padrão caso contrário
+  (leitura protegida por verificação de existência de tabela/coluna).
+- Base `shared/` ampliada: `components/`, `hooks/`, `services/`, `utils/`,
+  `constants/`.
+
 ## Próximo módulo
 
-O Módulo 02 (Dashboard) já possui uma rota protegida de exemplo em
-`modules/dashboard/`, pronta para receber os indicadores reais quando os
-módulos de alunos, financeiro e check-in forem implementados.
+Módulo 03 — Alunos. Ao criar a tabela `alunos` (com `id`, `created_at`,
+`updated_at`), o Dashboard passa a exibir os números reais automaticamente.

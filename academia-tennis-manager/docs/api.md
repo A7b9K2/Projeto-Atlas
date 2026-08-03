@@ -43,8 +43,26 @@ Resposta neutra `200` independentemente do e-mail existir.
 
 ### `GET /api/dashboard`
 
-Requer sessão (`requireAuth`). Retorna um resumo inicial com placeholders
-para os próximos módulos.
+Requer sessão (`requireAuth`). Retorna o resumo do painel. Usa dados reais
+quando as tabelas dos próximos módulos já existirem; caso contrário retorna
+valores padrão (`0` / listas vazias).
+
+```json
+{
+  "usuario": { "nome": "Pedro", "papel": "admin" },
+  "cards": {
+    "totalAlunos": 0,
+    "professoresCadastrados": 0,
+    "turmasAtivas": 0,
+    "aulasHoje": 0,
+    "recebimentoMes": 0,
+    "alunosInadimplentes": 0
+  },
+  "proximasAulas": [{ "horario": "", "professor": "", "turma": "" }],
+  "ultimosAlunos": [{ "nome": "", "criadoEm": "" }],
+  "atalhos": [{ "chave": "alunos", "rotulo": "Alunos", "rota": "/alunos", "disponivel": false }]
+}
+```
 
 ## Erros
 

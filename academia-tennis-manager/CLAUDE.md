@@ -101,3 +101,101 @@ Antes de qualquer tarefa:
 4. Alterar apenas os arquivos necessários.
 
 5. Nunca sair da pasta "academia-tennis-manager".
+
+---
+
+## Persistência
+
+Nunca alterar tabelas existentes sem necessidade.
+
+Sempre criar migrations incrementais.
+
+Nunca apagar dados automaticamente.
+
+Sempre preservar compatibilidade com versões anteriores.
+
+---
+
+## Banco de Dados
+
+Toda tabela deverá possuir obrigatoriamente:
+
+- id
+- created_at
+- updated_at
+
+Sempre utilizar chaves estrangeiras quando houver relacionamento.
+
+Nunca duplicar informações.
+
+Sempre normalizar o banco quando possível.
+
+Evitar colunas desnecessárias.
+
+---
+
+## Interface
+
+Sempre manter o preview funcionando durante todo o desenvolvimento.
+
+Nunca entregar telas quebradas.
+
+Sempre manter layout responsivo.
+
+Sempre utilizar componentes reutilizáveis.
+
+Seguir a identidade visual oficial:
+
+Azul-marinho #102A43
+
+Branco #FFFFFF
+
+Interface simples, moderna e rápida.
+
+---
+
+## Código
+
+Sempre preferir funções pequenas.
+
+Evitar arquivos muito grandes.
+
+Caso um arquivo ultrapasse aproximadamente 300 linhas, considerar dividi-lo.
+
+Nunca misturar regra de negócio com interface.
+
+Priorizar reutilização de componentes.
+
+Evitar código duplicado.
+
+Manter arquitetura limpa.
+
+---
+
+## Desenvolvimento
+
+Ao finalizar qualquer módulo:
+
+- validar funcionamento
+
+- verificar erros
+
+- corrigir problemas encontrados
+
+- atualizar documentação somente quando necessário
+
+- preservar compatibilidade com módulos anteriores
+
+- nunca quebrar funcionalidades já existentes
+
+---
+
+## Preview
+
+Durante todo o desenvolvimento manter o servidor de desenvolvimento em execução.
+
+Após qualquer alteração validar automaticamente o preview.
+
+Caso alguma alteração impeça o preview de funcionar, corrigir antes de finalizar.
+
+Nunca considerar um módulo concluído se o preview estiver quebrado.

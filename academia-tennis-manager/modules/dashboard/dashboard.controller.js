@@ -1,26 +1,18 @@
 'use strict';
 
 /**
- * Modulo 02 — Dashboard :: Interface (HTTP).
+ * Módulo 02 — Dashboard :: Interface (HTTP).
  *
- * Neste momento expoe apenas um resumo minimo, servindo de base protegida
- * para os proximos modulos. Toda rota aqui exige autenticacao.
+ * Primeira tela após o login. Delega toda a agregação ao service; aqui só
+ * traduz a requisição/resposta HTTP. Toda rota exige autenticação.
  */
 
 const { asyncHandler, sendJson } = require('../../shared/http');
+const service = require('./dashboard.service');
 
-/** GET /api/dashboard — resumo inicial para o usuario autenticado. */
+/** GET /api/dashboard — resumo completo para o usuário autenticado. */
 const resumo = asyncHandler(async (req, res) => {
-  sendJson(res, 200, {
-    bemVindo: req.user.nome,
-    papel: req.user.papel,
-    // Placeholders para os proximos modulos (alunos, financeiro, etc.).
-    indicadores: {
-      alunosAtivos: null,
-      recebimentosMes: null,
-      checkinsHoje: null,
-    },
-  });
+  sendJson(res, 200, service.montarResumo(req.user));
 });
 
 module.exports = { resumo };
