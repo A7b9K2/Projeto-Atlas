@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academia Tennis Manager</title>
+    <meta name="theme-color" content="#102A43" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <main id="app" class="app">
+      <!-- Estado inicial de carregamento; substituido via JS. -->
+      <section class="card card--loading" aria-busy="true">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Carregando…</p>
+      </section>
+    </main>
+
+    <!-- Templates das telas (reutilizados pelo app.js) -->
+
+    <template id="tpl-setup">
+      <section class="card">
+        <header class="card__head">
+          <div class="brand">
+            <span class="brand__mark">🎾</span>
+            <span class="brand__name">Academia Tennis Manager</span>
+          </div>
+          <h1>Criar administrador</h1>
+          <p class="muted">
+            Primeira execucao do sistema. Cadastre a conta de administrador.
+          </p>
+        </header>
+
+        <form data-form="setup" novalidate>
+          <div class="field">
+            <label for="setup-nome">Nome</label>
+            <input id="setup-nome" name="nome" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="setup-email">E-mail</label>
+            <input id="setup-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="setup-senha">Senha</label>
+            <input id="setup-senha" name="senha" type="password" autocomplete="new-password" minlength="6" required />
+          </div>
+          <div class="field">
+            <label for="setup-confirmar">Confirmar senha</label>
+            <input id="setup-confirmar" name="confirmarSenha" type="password" autocomplete="new-password" minlength="6" required />
+          </div>
+
+          <p class="form-error" data-error hidden></p>
+
+          <button class="btn btn--primary" type="submit">Criar e entrar</button>
+        </form>
+      </section>
+    </template>
+
+    <template id="tpl-login">
+      <section class="card">
+        <header class="card__head">
+          <div class="brand">
+            <span class="brand__mark">🎾</span>
+            <span class="brand__name">Academia Tennis Manager</span>
+          </div>
+          <h1>Entrar</h1>
+          <p class="muted">Acesse o painel de gestao da academia.</p>
+        </header>
+
+        <form data-form="login" novalidate>
+          <div class="field">
+            <label for="login-email">E-mail</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="login-senha">Senha</label>
+            <input id="login-senha" name="senha" type="password" autocomplete="current-password" required />
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox" name="lembrar" />
+            <span>Lembrar acesso</span>
+          </label>
+
+          <p class="form-error" data-error hidden></p>
+
+          <button class="btn btn--primary" type="submit">Entrar</button>
+
+          <button class="link" type="button" data-action="recuperar">
+            Esqueci minha senha
+          </button>
+        </form>
+      </section>
+    </template>
+
+    <template id="tpl-dashboard">
+      <div class="shell">
+        <header class="topbar">
+          <div class="brand brand--light">
+            <span class="brand__mark">🎾</span>
+            <span class="brand__name">Academia Tennis Manager</span>
+          </div>
+          <div class="topbar__user">
+            <span data-bind="nome"></span>
+            <button class="btn btn--ghost" type="button" data-action="logout">Sair</button>
+          </div>
+        </header>
+
+        <main class="content">
+          <h1>Dashboard</h1>
+          <p class="muted">Bem-vindo(a), <strong data-bind="nome"></strong>.</p>
+
+          <div class="grid">
+            <article class="stat">
+              <span class="stat__label">Alunos ativos</span>
+              <span class="stat__value" data-bind="alunosAtivos">—</span>
+            </article>
+            <article class="stat">
+              <span class="stat__label">Recebimentos do mes</span>
+              <span class="stat__value" data-bind="recebimentosMes">—</span>
+            </article>
+            <article class="stat">
+              <span class="stat__label">Check-ins hoje</span>
+              <span class="stat__value" data-bind="checkinsHoje">—</span>
+            </article>
+          </div>
+
+          <p class="muted small">
+            Modulo 01 (Autenticacao) concluido. Os indicadores serao
+            preenchidos pelos proximos modulos.
+          </p>
+        </main>
+      </div>
+    </template>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+  </body>
+</html>

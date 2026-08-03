@@ -1,0 +1,20 @@
+{
+  "name": "academia-tennis-manager",
+  "version": "1.0.0",
+  "description": "Sistema de gestao para uma unica academia de tenis.",
+  "private": true,
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node database/migrate.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}
